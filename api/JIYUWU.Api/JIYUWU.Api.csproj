@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JIYUWU.Base\JIYUWU.Base.csproj" />
+    <ProjectReference Include="..\JIYUWU.Build\JIYUWU.Build.csproj" />
+    <ProjectReference Include="..\JIYUWU.Core\JIYUWU.Core.csproj" />
+    <ProjectReference Include="..\JIYUWU.Entity\JIYUWU.Entity.csproj" />
+    <ProjectReference Include="..\JIYUWU.Product\JIYUWU.Product.csproj" />
+  </ItemGroup>
+
+</Project>
