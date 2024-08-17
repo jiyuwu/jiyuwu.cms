@@ -4,6 +4,7 @@ using Autofac.Extensions.DependencyInjection;
 using JIYUWU.Core.Common;
 using JIYUWU.Core.DbSqlSugar;
 using JIYUWU.Core.Extension;
+using JIYUWU.Core.ObjectActionValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -37,6 +38,8 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader().AllowAnyMethod();
             });
 });
+builder.Services.UseMethodsModelParameters().UseMethodsGeneralParameters();
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddControllers();
 //初始化配置文件

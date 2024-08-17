@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace JIYUWU.Core.Common
 {
-    public class BaseController
+    [ApiController]
+    public class BaseController : Controller
     {
         public BaseController()
         {
