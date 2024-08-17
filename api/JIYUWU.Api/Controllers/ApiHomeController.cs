@@ -3,10 +3,12 @@ using JIYUWU.Base.IService;
 using JIYUWU.Core.CacheManager;
 using JIYUWU.Core.Common;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JIYUWU.Api.Controllers
 {
+    [AllowAnonymous]
     public class ApiHomeController : BaseController
     {
         private ICacheService _cache;
