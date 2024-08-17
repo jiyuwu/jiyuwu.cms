@@ -1,5 +1,5 @@
 ﻿using JIYUWU.Core.Common;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using System.Linq.Expressions;
 
 namespace JIYUWU.Core.WorkFlow

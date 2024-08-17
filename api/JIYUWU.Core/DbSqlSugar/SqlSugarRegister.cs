@@ -45,13 +45,13 @@ namespace JIYUWU.Core.DbSqlSugar
         /// <returns></returns>
         private static ConnectionConfig GetEmptyConnectionConfig()
         {
-            //Console.WriteLine(AppSetting.GetSection("Connection")["EmptyDbContext"]);
+            //Console.WriteLine(AppSetting.GetSection("ConnectionStrs")["EmptyDbContext"]);
             var dbType = DbManger.GetDbType();
             //模板空库(租户动态分才使用)
             return new ConnectionConfig()
             {
                 DbType = dbType,// SqlSugar.DbType.SqlServer,
-                ConnectionString = AppSetting.GetSection("Connection")["EmptyDbContext"],
+                ConnectionString = AppSetting.GetSection("ConnectionStrs")["EmptyDbContext"],
                 IsAutoCloseConnection = true,
                 ConfigId = "EmptyDbContext",
                 MoreSettings = new ConnMoreSettings()
@@ -97,7 +97,7 @@ namespace JIYUWU.Core.DbSqlSugar
                 db =>
                 {
                     //业务库日志
-                    foreach (var item in configs.Where(x => x.ConfigId?.ToString() != "SysDbContext"))
+                    foreach (var item in configs.Where(x => x.ConfigId?.ToString() != "BaseDbContext"))
                     {
                         string id = item.ConfigId.ToString();
                         if (db.GetConnection(id) != null)

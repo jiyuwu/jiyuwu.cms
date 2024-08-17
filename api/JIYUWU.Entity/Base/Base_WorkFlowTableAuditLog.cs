@@ -4,7 +4,7 @@ using SqlSugar;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "审批记录",TableName = "Base_WorkFlowTableAuditLog", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "审批记录",TableName = "Base_WorkFlowTableAuditLog", DBServer = "BaseDbContext")]
     public partial class Base_WorkFlowTableAuditLog : BaseEntity
     {
         /// <summary>

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using System.Text;
 
-namespace JIYUWU.Core
+namespace JIYUWU.Core.Language
 {
     public static class LanguageContainer
     {

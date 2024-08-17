@@ -1,4 +1,4 @@
-﻿using JIYUWU.Core.Extensions;
+﻿using JIYUWU.Core.Extension;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,12 +19,12 @@ namespace JIYUWU.Core.Common
 
         public static string DbConnectionString
         {
-            get { return _connection.DbConnectionString; }
+            get { return _connection.DbConnectionStr; }
         }
 
         public static string RedisConnectionString
         {
-            get { return _connection.RedisConnectionString; }
+            get { return _connection.RedisConnectionStr; }
         }
 
         public static bool UseRedis
@@ -38,7 +38,7 @@ namespace JIYUWU.Core.Common
 
         public static bool UseSqlserver2008
         {
-            get { return _connection.UseSqlserver2008; }
+            get { return _connection.UseSqlServer2008; }
         }
         public static Secret Secret { get; private set; }
         public static CreateMember CreateMember { get; private set; }
@@ -82,7 +82,7 @@ namespace JIYUWU.Core.Common
         {
             Configuration = configuration;
             services.Configure<Secret>(configuration.GetSection("Secret"));
-            services.Configure<Connection>(configuration.GetSection("Connection"));
+            services.Configure<Connection>(configuration.GetSection("ConnectionStrs"));
             services.Configure<GlobalFilter>(configuration.GetSection("GlobalFilter"));
 
             var provider = services.BuildServiceProvider();
@@ -134,20 +134,20 @@ namespace JIYUWU.Core.Common
             ExpMinutes = (configuration["ExpMinutes"] ?? "120").GetInt();
 
             DBType.Name = _connection.DBType;
-            if (string.IsNullOrEmpty(_connection.DbConnectionString))
+            if (string.IsNullOrEmpty(_connection.DbConnectionStr))
                 throw new System.Exception("未配置好数据库默认连接");
 
             try
             {
-                _connection.DbConnectionString = _connection.DbConnectionString.DecryptDES(Secret.DB);
+                _connection.DbConnectionStr = _connection.DbConnectionStr.DecryptDES(Secret.DB);
             }
             catch { }
 
-            if (!string.IsNullOrEmpty(_connection.RedisConnectionString))
+            if (!string.IsNullOrEmpty(_connection.RedisConnectionStr))
             {
                 try
                 {
-                    _connection.RedisConnectionString = _connection.RedisConnectionString.DecryptDES(Secret.Redis);
+                    _connection.RedisConnectionStr = _connection.RedisConnectionStr.DecryptDES(Secret.Redis);
                 }
                 catch { }
             }
@@ -168,9 +168,9 @@ namespace JIYUWU.Core.Common
     public class Connection
     {
         public string DBType { get; set; }
-        public bool UseSqlserver2008 { get; set; }
-        public string DbConnectionString { get; set; }
-        public string RedisConnectionString { get; set; }
+        public bool UseSqlServer2008 { get; set; }
+        public string DbConnectionStr { get; set; }
+        public string RedisConnectionStr { get; set; }
         public bool UseRedis { get; set; }
         public bool UseSignalR { get; set; }
     }

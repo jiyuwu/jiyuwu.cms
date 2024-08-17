@@ -1,5 +1,5 @@
 ﻿using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using JIYUWU.Entity.Base;
 using SqlSugar;
 using CC = JIYUWU.Core.CacheManager;

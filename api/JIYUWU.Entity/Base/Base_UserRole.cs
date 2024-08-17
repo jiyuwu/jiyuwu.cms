@@ -4,7 +4,7 @@ using SqlSugar;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "用户角色",TableName = "Base_UserRole",DBServer = "SysDbContext")]
+    [Entity(TableCnName = "用户角色",TableName = "Base_UserRole",DBServer = "BaseDbContext")]
     public partial class Base_UserRole:BaseEntity
     {
         /// <summary>

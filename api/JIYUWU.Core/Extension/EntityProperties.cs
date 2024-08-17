@@ -1,23 +1,19 @@
 ﻿using JIYUWU.Core.Common;
 using SqlSugar;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using JIYUWU.Entity.Base;
 using JIYUWU.Core.UserManager;
 using JIYUWU.Entity;
 using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 
-namespace JIYUWU.Core.Extensions
+namespace JIYUWU.Core.Extension
 {
     public static class EntityProperties
     {

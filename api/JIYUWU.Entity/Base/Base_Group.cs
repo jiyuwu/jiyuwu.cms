@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "集团管理", TableName = "Base_Group", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "集团管理", TableName = "Base_Group", DBServer = "BaseDbContext")]
     public partial class Base_Group : BaseEntity
     {
         /// <summary>

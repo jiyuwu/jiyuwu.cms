@@ -1,21 +1,17 @@
 ﻿using JIYUWU.Core.Common;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 using System.Xml;
 using JIYUWU.Core.UserManager;
 
-namespace JIYUWU.Core.Extensions
+namespace JIYUWU.Core.Extension
 {
     public static class StringExtension
     {

@@ -5,7 +5,7 @@ using SqlSugar;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "角色管理",TableName = "Base_Role", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "角色管理",TableName = "Base_Role", DBServer = "BaseDbContext")]
     public partial class Base_Role: BaseEntity
     {
         /// <summary>
@@ -128,5 +128,18 @@ namespace JIYUWU.Entity.Base
        public Guid? DbServiceId { get; set; }
 
        
+    }
+    public class UserPermissions
+    {
+        public int Id { get; set; }
+        public int Pid { get; set; }
+        public string Text { get; set; }
+        public bool IsApp { get; set; }
+        public List<Base_Actions> Actions { get; set; }
+
+        /// <summary>
+        ///菜单数据权限
+        /// </summary>
+        public string AuthMenuData { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "用户权限", TableName = "Base_UserAuth", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "用户权限", TableName = "Base_UserAuth", DBServer = "BaseDbContext")]
     public partial class Base_UserAuth : BaseEntity
     {
         /// <summary>

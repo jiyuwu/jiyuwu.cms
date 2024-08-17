@@ -6,7 +6,7 @@ using JIYUWU.Entity.ApiEntity;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "用户管理",TableName = "Base_User",DBServer = "SysDbContext",ApiInput = typeof(UserInput),ApiOutput = typeof(UserOutput))]
+    [Entity(TableCnName = "用户管理",TableName = "Base_User",DBServer = "BaseDbContext", ApiInput = typeof(UserInput),ApiOutput = typeof(UserOutput))]
     public partial class Base_User:BaseEntity
     {
         /// <summary>

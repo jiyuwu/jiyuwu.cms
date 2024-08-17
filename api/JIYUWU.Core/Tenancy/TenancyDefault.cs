@@ -1,5 +1,5 @@
 ﻿using JIYUWU.Core.Common;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using JIYUWU.Core.UserManager;
 using SqlSugar;
 using System.Reflection;

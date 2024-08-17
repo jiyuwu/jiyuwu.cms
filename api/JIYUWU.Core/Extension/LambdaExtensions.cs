@@ -1,14 +1,9 @@
 ﻿using JIYUWU.Core.Common;
 using SqlSugar;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace JIYUWU.Core.Extensions
+namespace JIYUWU.Core.Extension
 {
     public static class LambdaExtensions
     {

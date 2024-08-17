@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "租户管理", TableName = "Base_DbService", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "租户管理", TableName = "Base_DbService", DBServer = "BaseDbContext")]
     public partial class Base_DbService : BaseEntity
     {
         /// <summary>

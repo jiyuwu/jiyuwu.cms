@@ -1,4 +1,4 @@
-﻿using JIYUWU.Core.Extensions;
+﻿using JIYUWU.Core.Extension;
 
 namespace JIYUWU.Core.DbSqlSugar
 {

@@ -1,5 +1,5 @@
 ﻿using JIYUWU.Core.Common;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using JIYUWU.Core.UserManager;
 using JIYUWU.Entity;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,7 +97,7 @@ namespace JIYUWU.Core.DbSqlSugar
         /// 
         /// </summary>
         /// <param name="dbContextName">
-        ///获取系统库 DbManger.GetSqlSugarClient(typeof(SysDbContext).Name)
+        ///获取系统库 DbManger.GetSqlSugarClient(typeof(BaseDbContext).Name)
         ///获取业务库  DbManger.GetSqlSugarClient(typeof(ServiceDbContext).Name)
         /// </param>
         /// <returns></returns>

@@ -3,7 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JIYUWU.Core\JIYUWU.Core.csproj" />
+    <ProjectReference Include="..\JIYUWU.Entity\JIYUWU.Entity.csproj" />
+  </ItemGroup>
 
 </Project>

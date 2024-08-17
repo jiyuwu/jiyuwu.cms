@@ -1,5 +1,5 @@
 ﻿using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using JIYUWU.Entity;
 using JIYUWU.Entity.Base;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;

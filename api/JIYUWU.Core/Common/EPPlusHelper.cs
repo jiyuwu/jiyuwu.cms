@@ -1,5 +1,5 @@
 ﻿using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using OfficeOpenXml.Style;
 using OfficeOpenXml;
 using System;
@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JIYUWU.Core.Language;
 
 namespace JIYUWU.Core.Common
 {

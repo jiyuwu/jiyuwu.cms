@@ -4,7 +4,7 @@ using SqlSugar;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "省市区县",TableName = "Base_Region", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "省市区县",TableName = "Base_Region", DBServer = "BaseDbContext")]
     public partial class Base_Region: BaseEntity
     {
         /// <summary>

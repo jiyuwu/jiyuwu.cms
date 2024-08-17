@@ -1,9 +1,12 @@
+using Autofac;
 using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
+using JIYUWU.Core.Common;
 using JIYUWU.Core.DbSqlSugar;
+using JIYUWU.Core.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var configuration = builder.Configuration;
 // 使用 Autofac 替换默认的服务提供程序工厂
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
@@ -36,6 +39,14 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddControllers();
+//初始化配置文件
+AppSetting.Init(builder.Services, configuration);
+// 调用 ConfigureContainer 方法，注册 Autofac 容器中的自定义模块
+builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+{
+    // Assuming `Services.AddModule` is an extension method for registering modules
+    builder.Services.AddModule(containerBuilder, configuration);
+});
 builder.Services.UseSqlSugar();
 
 var app = builder.Build();

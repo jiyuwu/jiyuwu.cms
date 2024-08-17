@@ -1,11 +1,6 @@
 ﻿using JIYUWU.Core.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace JIYUWU.Core.Extensions
+namespace JIYUWU.Core.Extension
 {
     public static class CacheKeyExtension
     {

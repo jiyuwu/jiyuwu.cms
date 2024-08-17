@@ -4,7 +4,7 @@ using SqlSugar;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "字典明细",TableName = "Bases_DictionaryList", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "字典明细",TableName = "Bases_DictionaryList", DBServer = "BaseDbContext")]
     public partial class Base_DictionaryList: BaseEntity
     {
         /// <summary>

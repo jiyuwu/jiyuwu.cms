@@ -1,4 +1,4 @@
-﻿using JIYUWU.Core.Extensions;
+﻿using JIYUWU.Core.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;

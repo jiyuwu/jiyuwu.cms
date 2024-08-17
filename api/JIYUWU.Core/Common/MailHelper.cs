@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Net.Mail;
 using System.Net;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 
 namespace JIYUWU.Core.Common
 {

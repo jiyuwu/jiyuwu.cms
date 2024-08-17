@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "系统日志", TableName = "Base_Log", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "系统日志", TableName = "Base_Log", DBServer = "BaseDbContext")]
     public partial class Base_Log : BaseEntity
     {
         /// <summary>

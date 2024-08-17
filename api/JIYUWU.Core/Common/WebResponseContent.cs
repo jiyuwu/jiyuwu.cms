@@ -1,4 +1,5 @@
-﻿using JIYUWU.Core.Extensions;
+﻿using JIYUWU.Core.Extension;
+using JIYUWU.Core.Language;
 
 namespace JIYUWU.Core.Common
 {

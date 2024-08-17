@@ -1,6 +1,7 @@
 ﻿using JIYUWU.Core.Common;
 using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
+using JIYUWU.Core.Language;
 using JIYUWU.Core.UserManager;
 using JIYUWU.Entity.Base;
 using System.Reflection;

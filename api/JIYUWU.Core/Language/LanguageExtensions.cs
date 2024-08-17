@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using SqlSugar;
 using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using JIYUWU.Core.Common;
 using JIYUWU.Entity.Base;
 
@@ -28,7 +28,7 @@ namespace JIYUWU.Core.Language
         public static void CreateLanguagePack(this ISqlSugarClient context)
         {
             //FormattableString sql = null;
-           //var context = DbManger.SysDbContext;
+           //var context = DbManger.BaseDbContext;
             var lang = context.Set<Base_Language>()
                 .Select(s => new
                 {

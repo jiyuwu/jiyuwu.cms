@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JIYUWU.Entity.Base
 {
-    [Entity(TableCnName = "单据编码", TableName = "Base_CodeRule", DBServer = "SysDbContext")]
+    [Entity(TableCnName = "单据编码", TableName = "Base_CodeRule", DBServer = "BaseDbContext")]
     public partial class Base_CodeRule : BaseEntity
     {
         /// <summary>

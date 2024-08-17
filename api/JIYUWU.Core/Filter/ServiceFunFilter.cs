@@ -5,7 +5,7 @@ using OfficeOpenXml;
 using SqlSugar;
 using System.Linq.Expressions;
 
-namespace JIYUWU.Core.Filters
+namespace JIYUWU.Core.Filter
 {
     public abstract class ServiceFunFilter<T> where T : class
     {

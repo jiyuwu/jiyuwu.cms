@@ -4,7 +4,7 @@ using System.Collections;
 using System.Data;
 using System.Text;
 
-namespace JIYUWU.Core.Extensions
+namespace JIYUWU.Core.Extension
 {
     public static class ConvertJsonExtension
     {

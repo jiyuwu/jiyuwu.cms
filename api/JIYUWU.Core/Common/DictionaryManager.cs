@@ -1,6 +1,6 @@
 ﻿using JIYUWU.Core.CacheManager;
 using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extensions;
+using JIYUWU.Core.Extension;
 using JIYUWU.Core.UserManager;
 using JIYUWU.Entity.Base;
 using System;

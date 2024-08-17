@@ -30,7 +30,7 @@ namespace JIYUWU.Core.DbSqlSugar
         public static void InitDbContextType()
         {
             //系统库链接
-            DbContextConnection["SysDbContext"] = AppSetting.GetSection("Connection")["DbConnectionString"];
+            DbContextConnection["BaseDbContext"] = AppSetting.GetSection("ConnectionStrs")["DbConnectionStr"];
             var compilationLibrary = DependencyContext
                  .Default
                  .RuntimeLibraries
@@ -49,7 +49,7 @@ namespace JIYUWU.Core.DbSqlSugar
                         if (!DbContextConnection.TryGetValue(item.Name, out string value))
                         {
                             //缓存自定义库及业务库链接
-                            DbContextConnection[item.Name] = AppSetting.GetSection("Connection")[item.Name];
+                            DbContextConnection[item.Name] = AppSetting.GetSection("ConnectionStrs")[item.Name];
                         }
                     }
                     catch (Exception ex)
