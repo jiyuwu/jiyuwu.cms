@@ -157,11 +157,11 @@ namespace JIYUWU.Core.DbSqlSugar
             }
             throw new Exception("未实现数据库");
         }
-        public static BaseDbContext GetDbContext<TEntity>()
+        public static MyDbContext GetDbContext<TEntity>()
         {
             string dbServer = typeof(TEntity).GetTypeCustomValue<EntityAttribute>(x => x.DBServer);
 
-            return HttpContext.Current.RequestServices.GetService(DbRelativeCache.GetDbContextType(dbServer)) as BaseDbContext;
+            return HttpContext.Current.RequestServices.GetService(DbRelativeCache.GetDbContextType(dbServer)) as MyDbContext;
         }
     }
 }

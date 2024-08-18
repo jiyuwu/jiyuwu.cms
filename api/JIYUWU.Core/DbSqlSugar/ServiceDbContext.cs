@@ -2,7 +2,7 @@
 
 namespace JIYUWU.Core.DbSqlSugar
 {
-    public class ServiceDbContext : BaseDbContext, IDependency
+    public class ServiceDbContext : MyDbContext, IDependency
     {
         private string dbServiceId { get; set; }
 

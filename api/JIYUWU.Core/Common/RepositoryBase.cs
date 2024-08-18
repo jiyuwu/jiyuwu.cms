@@ -12,13 +12,13 @@ namespace JIYUWU.Core.Common
 {
     public abstract class RepositoryBase<TEntity> where TEntity : BaseEntity, new()
     {
-        public RepositoryBase(BaseDbContext dbContext)
+        public RepositoryBase(MyDbContext dbContext)
         {
             this.DefaultDbContext = dbContext;
         }
 
-        private BaseDbContext DefaultDbContext { get; set; }
-        public BaseDbContext BaseDbContext
+        private MyDbContext DefaultDbContext { get; set; }
+        public MyDbContext BaseDbContext
         {
             get
             {

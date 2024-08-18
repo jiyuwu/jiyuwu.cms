@@ -9,7 +9,7 @@ namespace JIYUWU.Core.Common
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {
 
-        BaseDbContext BaseDbContext { get; }
+        MyDbContext BaseDbContext { get; }
 
         /// <summary>
         /// EF DBContext

@@ -680,7 +680,7 @@ namespace JIYUWU.Core.WorkFlow
         //     Action<T, List<int>> initInvoke = null
         //    ) where T : class
 
-        public static WebResponseContent Audit<T>(BaseDbContext tableDbContext, T entity, AuditStatus status, string remark,
+        public static WebResponseContent Audit<T>(MyDbContext tableDbContext, T entity, AuditStatus status, string remark,
            PropertyInfo autditProperty = null,
            Func<T, AuditStatus, bool, WebResponseContent> workFlowExecuting = null,
            Func<T, AuditStatus, List<int>, bool, WebResponseContent> workFlowExecuted = null,
@@ -1023,7 +1023,7 @@ namespace JIYUWU.Core.WorkFlow
         private static WebResponseContent UpdateAuditStatus<T>(
             string apiModel,
             string sqlModel,
-            BaseDbContext tableDbContext,
+            MyDbContext tableDbContext,
              T entity,
             Base_WorkFlowTable workFlow,
             FilterOptions filterOptions,
@@ -1201,7 +1201,7 @@ namespace JIYUWU.Core.WorkFlow
             return webResponse.OK();
         }
 
-        private static void SendMail(Base_WorkFlowTable workFlow, FilterOptions filterOptions, Base_WorkFlowTableStep nextStep, BaseDbContext dbContext)
+        private static void SendMail(Base_WorkFlowTable workFlow, FilterOptions filterOptions, Base_WorkFlowTableStep nextStep, MyDbContext dbContext)
         {
             if (filterOptions == null || filterOptions.SendMail != 1)
             {

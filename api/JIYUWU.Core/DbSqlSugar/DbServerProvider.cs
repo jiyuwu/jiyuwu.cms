@@ -41,11 +41,11 @@ namespace JIYUWU.Core.DbSqlSugar
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public static BaseDbContext GetEntityDbContext<TEntity>()
+        public static MyDbContext GetEntityDbContext<TEntity>()
         {
             string dbServer = typeof(TEntity).GetTypeCustomValue<EntityAttribute>(x => x.DBServer);
 
-            return HttpContext.Current.RequestServices.GetService(DbRelativeCache.GetDbContextType(dbServer)) as BaseDbContext;
+            return HttpContext.Current.RequestServices.GetService(DbRelativeCache.GetDbContextType(dbServer)) as MyDbContext;
         }
 
         /// <summary>

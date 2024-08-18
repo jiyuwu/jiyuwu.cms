@@ -14,7 +14,7 @@ namespace JIYUWU.Core.DbSqlSugar
     public static class SqlSugarExtension
     {
 
-        public static int Add<T>(this BaseDbContext dbContext, T table, bool saveChange = false) where T : class, new()
+        public static int Add<T>(this MyDbContext dbContext, T table, bool saveChange = false) where T : class, new()
         {
             dbContext.SqlSugarClient.Insertable(table).AddQueue();
             if (saveChange)
@@ -34,7 +34,7 @@ namespace JIYUWU.Core.DbSqlSugar
             return 1;
         }
 
-        public static async Task<int> AddAsync<T>(this BaseDbContext dbContext, T list, bool saveChange = false) where T : class, new()
+        public static async Task<int> AddAsync<T>(this MyDbContext dbContext, T list, bool saveChange = false) where T : class, new()
         {
             dbContext.SqlSugarClient.Insertable(list).AddQueue();
             if (saveChange)
@@ -44,7 +44,7 @@ namespace JIYUWU.Core.DbSqlSugar
             return 1;
         }
 
-        public static int AddRange<T>(this BaseDbContext dbContext, List<T> list, bool saveChange = false) where T : class, new()
+        public static int AddRange<T>(this MyDbContext dbContext, List<T> list, bool saveChange = false) where T : class, new()
         {
             if (typeof(T).GetSugarSplitTable() != null)
             {
@@ -59,7 +59,7 @@ namespace JIYUWU.Core.DbSqlSugar
             return list.Count;
         }
 
-        public static async Task<int> AddRangeAsync<T>(this BaseDbContext dbContext, List<T> list, bool saveChange = false) where T : class, new()
+        public static async Task<int> AddRangeAsync<T>(this MyDbContext dbContext, List<T> list, bool saveChange = false) where T : class, new()
         {
             if (typeof(T).GetSugarSplitTable() != null)
             {
@@ -73,28 +73,28 @@ namespace JIYUWU.Core.DbSqlSugar
             }
             return list.Count;
         }
-        public static int Update<TSource>(this BaseDbContext dbContext, TSource entity, bool saveChanges = false) where TSource : class, new()
+        public static int Update<TSource>(this MyDbContext dbContext, TSource entity, bool saveChanges = false) where TSource : class, new()
         {
             return UpdateRange<TSource>(dbContext, new List<TSource>() { entity }, new string[] { }, saveChanges);
         }
-        public static int Update<TSource>(this BaseDbContext dbContext, TSource entity, Expression<Func<TSource, object>> updateMainFields, bool saveChanges = false) where TSource : class, new()
+        public static int Update<TSource>(this MyDbContext dbContext, TSource entity, Expression<Func<TSource, object>> updateMainFields, bool saveChanges = false) where TSource : class, new()
         {
             return UpdateRange<TSource>(dbContext, new List<TSource>() { entity }, updateMainFields.GetExpressionProperty(), saveChanges);
         }
 
-        public static int Update<TSource>(this BaseDbContext dbContext, TSource entity, string[] properties, bool saveChanges = false) where TSource : class, new()
+        public static int Update<TSource>(this MyDbContext dbContext, TSource entity, string[] properties, bool saveChanges = false) where TSource : class, new()
         {
             return UpdateRange<TSource>(dbContext, new List<TSource>() { entity }, properties, saveChanges);
         }
-        public static int UpdateRange<TSource>(this BaseDbContext dbContext, IEnumerable<TSource> entities, bool saveChanges = false) where TSource : class, new()
+        public static int UpdateRange<TSource>(this MyDbContext dbContext, IEnumerable<TSource> entities, bool saveChanges = false) where TSource : class, new()
         {
             return UpdateRange<TSource>(dbContext, entities, new string[] { }, saveChanges);
         }
-        public static int UpdateRange<TSource>(this BaseDbContext dbContext, IEnumerable<TSource> entities, Expression<Func<TSource, object>> updateMainFields, bool saveChanges = false) where TSource : class, new()
+        public static int UpdateRange<TSource>(this MyDbContext dbContext, IEnumerable<TSource> entities, Expression<Func<TSource, object>> updateMainFields, bool saveChanges = false) where TSource : class, new()
         {
             return UpdateRange<TSource>(dbContext, entities, updateMainFields.GetExpressionProperty(), saveChanges);
         }
-        public static int UpdateRange<TSource>(this BaseDbContext dbContext, IEnumerable<TSource> entities, string[] properties, bool saveChanges = false) where TSource : class, new()
+        public static int UpdateRange<TSource>(this MyDbContext dbContext, IEnumerable<TSource> entities, string[] properties, bool saveChanges = false) where TSource : class, new()
         {
             return dbContext.SqlSugarClient.UpdateRange<TSource>(entities, properties, saveChanges);
         }
