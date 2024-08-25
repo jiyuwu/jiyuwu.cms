@@ -1,85 +1,55 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <el-config-provider :locale="currentLocale">
+    <router-view />
+    <ReDialog />
+  </el-config-provider>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+<script lang="ts">
+import { defineComponent } from "vue";
+import { checkVersion } from "version-rocket";
+import { ElConfigProvider } from "element-plus";
+import { ReDialog } from "@/components/ReDialog";
+import en from "element-plus/es/locale/lang/en";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
+import plusEn from "plus-pro-components/es/locale/lang/en";
+import plusZhCn from "plus-pro-components/es/locale/lang/zh-cn";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+export default defineComponent({
+  name: "app",
+  components: {
+    [ElConfigProvider.name]: ElConfigProvider,
+    ReDialog
+  },
+  computed: {
+    currentLocale() {
+      return this.$storage.locale?.locale === "zh"
+        ? { ...zhCn, ...plusZhCn }
+        : { ...en, ...plusEn };
+    }
+  },
+  beforeCreate() {
+    const { version, name: title } = __APP_INFO__.pkg;
+    const { VITE_PUBLIC_PATH, MODE } = import.meta.env;
+    // https://github.com/guMcrey/version-rocket/blob/main/README.zh-CN.md#api
+    if (MODE === "production") {
+      // 版本实时更新检测，只作用于线上环境
+      checkVersion(
+        // config
+        {
+          // 5分钟检测一次版本
+          pollingTime: 300000,
+          localPackageVersion: version,
+          originVersionFileUrl: `${location.origin}${VITE_PUBLIC_PATH}version.json`
+        },
+        // options
+        {
+          title,
+          description: "检测到新版本",
+          buttonText: "立即更新"
+        }
+      );
+    }
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
+});
+</script>
