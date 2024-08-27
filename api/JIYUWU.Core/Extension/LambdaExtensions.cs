@@ -219,10 +219,6 @@ namespace JIYUWU.Core.Extension
             Expression<Func<T, bool>> expression;
             switch (expressionType)
             {
-                //p=>p.propertyName == propertyValue
-                //case LinqExpressionType.Equal:
-                //    expression = Expression.Lambda<Func<T, bool>>(Expression.Equal(member, constant), parameter);
-                //    break;
                 //p=>p.propertyName != propertyValue
                 case LinqExpressionType.NotEqual:
                     expression = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(member, constant), parameter);
@@ -269,10 +265,6 @@ namespace JIYUWU.Core.Extension
                     expression = Expression.Lambda<Func<T, bool>>(startsWithCall, parameter);
                     break;
                 default:
-                    // p => p.false
-                    //  expression = False<T>();
-                    //   break;
-                    //  case LinqExpressionType.Equal:
                     expression = Expression.Lambda<Func<T, bool>>(Expression.Equal(member, constant), parameter);
                     break;
             }

@@ -17,14 +17,6 @@ namespace UMES.Core.Tenancy
         /// <returns></returns>
         public static ISugarQueryable<T> CreateTenancyFilter<T>(this ISugarQueryable<T> query)
         {
-            //2023.12.10实现租户字段过滤
-            //if (AppSetting.TenancyField != null
-            //    && typeof(T).GetProperty(AppSetting.TenancyField) != null
-            //    && !string.IsNullOrEmpty(UserContext.Current.UserInfo.TenancyValue))
-            //{
-            //    query = query.Where(AppSetting.TenancyField.CreateExpression<T>(UserContext.Current.UserInfo.TenancyValue, LinqExpressionType.Equal));
-            //}
-
             //是否用户表
             bool isUserTable = typeof(T) == typeof(Base_User);
 
@@ -64,7 +56,7 @@ namespace UMES.Core.Tenancy
                 }
             }
             var roleIds = UserContext.Current.RoleIds;
-            //2024.08.11增加菜单数据权限(优先级高级角色数据权限)
+            //菜单数据权限(优先级高级角色数据权限)
             List<int> authDataTypes = null;
             string authMenuData = UserContext.Current.GetPermissions(tableName.ToLower())?.AuthMenuData;
             if (!string.IsNullOrEmpty(authMenuData))

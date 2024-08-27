@@ -1708,10 +1708,7 @@ namespace JIYUWU.Core.Common
             //获取需要删除的对象的主键
             if (detailDelKeys != null && detailDelKeys.Count > 0)
             {
-                //2021.08.21优化明细表删除
                 delKeys = detailDelKeys.Select(q => q.ChangeType(detailKeyInfo.PropertyType)).Where(x => x != null).ToList();
-                //.Where(x => detailKeys.Contains(x.ChangeType(detailKeyInfo.PropertyType)))
-                //.Select(q => q.ChangeType(detailKeyInfo.PropertyType)).ToList();
             }
 
             if (editList.Count > 0)
@@ -1722,8 +1719,6 @@ namespace JIYUWU.Core.Common
                     //設置默認值
                     x.SetModifyDefaultVal();
                     //添加修改字段
-
-                    // repository.Update<DetailT>(x, updateField.ToArray());
                 });
                 //获取编辑的字段
                 var updateField = detailData
@@ -1734,10 +1729,6 @@ namespace JIYUWU.Core.Common
                     .Where(r => !CreateFields.Contains(r) && r != subType?.Name)
                     .ToList();
                 updateField.AddRange(ModifyFields);
-                //if (subType != null)
-                //{
-                //    updateField.Add(subType.Name);
-                //}
                 multipleTableEntities.Add(new MultipleTableEntity()
                 {
                     Type = detailType,
@@ -1797,13 +1788,6 @@ namespace JIYUWU.Core.Common
             //明细删除
             if (delKeys.Count > 0)
             {
-                //delKeys.ForEach(x =>
-                //{
-                //    DetailT delT = Activator.CreateInstance<DetailT>();
-                //    detailKeyInfo.SetValue(delT, x);
-                //    repository.DbContext.Entry<DetailT>(delT).State = EntityState.Deleted;
-                //});
-
                 multipleTableEntities.Add(new MultipleTableEntity()
                 {
                     Type = detailType,
@@ -1875,16 +1859,6 @@ namespace JIYUWU.Core.Common
 
 
             //最后一个明细执行保存
-
-
-            //if (UpdateOnExecuted == null)
-            //{
-            //    SetMultipleTableEntities();
-            //    repository.DbContext.SaveChanges();
-            //    Response.OK(ResponseType.SaveSuccess);
-            //}
-            //else
-            //{
             Response = repository.DbContextBeginTransaction(() =>
             {
                 mainEntity.SetModifyDefaultVal();
@@ -1898,7 +1872,6 @@ namespace JIYUWU.Core.Common
                 repository.DbContext.SaveChanges();
 
                 //多明细表从mainEntity与SaveModel.Details中取数据
-                //mainEntity为主表与明细表数据，SaveModel.Details中取删除的数据
                 if (UpdateOnExecuted != null)
                 {
                     if (isMultipleDetail)
@@ -1912,7 +1885,6 @@ namespace JIYUWU.Core.Common
                 }
                 return Response;
             });
-            //  }
             if (Response.Status)
             {
                 addList.AddRange(editList);
@@ -1970,8 +1942,6 @@ namespace JIYUWU.Core.Common
                           .MakeGenericMethod(new Type[] { multipleTable.SubType, typeof(Detail) })
                           .Invoke(this, new object[] { multipleTable.List });
                 }
-                //repository.DbContext.Entry<Detail>(x).State = EntityState.Added;
-
                 return;
             }
             var detailKeyInfo = typeof(Detail).GetKeyProperty();
@@ -1980,7 +1950,6 @@ namespace JIYUWU.Core.Common
                 Detail delT = Activator.CreateInstance<Detail>();
                 detailKeyInfo.SetValue(delT, key);
                 repository.Delete<Detail>(delT, false);
-                //  repository.DbContext.Entry<Detail>(delT).State = EntityState.Deleted;
             }
         }
         /// <summary>
@@ -2015,7 +1984,6 @@ namespace JIYUWU.Core.Common
                     if (string.IsNullOrEmpty(value) || value == "0" || value == Guid.Empty.ToString())
                     {
                         sub.SetCreateDefaultVal();
-                        //  repository.Add(sub);
                         //新加的数据
                         SetDetailEntityValue<Detail, TSub>(item, sub);
                         repository.AddWithSetIdentity<TSub>(sub);
@@ -2076,7 +2044,6 @@ namespace JIYUWU.Core.Common
                 {
                     TSub entity = Activator.CreateInstance<TSub>();
                     keyPro.SetValue(entity, key.ChangeType(keyPro.PropertyType));
-                    // repository.DbContext.Entry<TSub>(entity).State = EntityState.Deleted;
                     repository.Delete(entity);
                 }
 
@@ -2116,12 +2083,7 @@ namespace JIYUWU.Core.Common
                 LogicDel(keys, keyProperty, lgProperty);
                 return Response;
             }
-            // FieldType fieldType = entityType.GetFieldType();
-            //string joinKeys = (fieldType == FieldType.Int || fieldType == FieldType.BigInt)
-            //     ? string.Join(",", keys)
-            //     : $"'{string.Join("','", keys)}'";
-
-            // 2020.08.15添加判断多租户数据（删除）
+            // 判断多租户数据（删除）
             if (IsMultiTenancy && !UserContext.Current.IsSuperAdmin)
             {
                 // CheckDelMultiTenancy(joinKeys, tKey);
@@ -2140,17 +2102,7 @@ namespace JIYUWU.Core.Common
             //可能在删除后还要做一些其它数据库新增或删除操作，这样就可能需要与删除保持在同一个事务中处理
             Response = repository.DbContextBeginTransaction(() =>
             {
-                //if (typeof(T).GetSugarSplitTable() != null)
-                //{
-                //    typeof(T).GetProperties().Where(x => x.GetConfigValue<SplitFieldAttribute>() != null)
-                //    .FirstOrDefault()?.GetValue();
-
-                //    repository.SqlSugarClient.SplitHelper<T>().GetTableName();
-                //    repository.SqlSugarClient.Deleteable<T>().In(keys).SplitTable().ExecuteCommand();
-                //}
-                //else {
                 repository.SqlSugarClient.Deleteable<T>().In(keys).ExecuteCommand();
-                //}
 
                 if (delList)
                 {
@@ -2306,7 +2258,6 @@ namespace JIYUWU.Core.Common
                 return Response.Error($"未查到数据,或者数据已被删除,id:{keys[0]}");
             }
             var auditProperty = GetAuditProperty();
-            // var auditProperty = TProperties.Where(x => x.Name.ToLower() == "auditstatus").FirstOrDefault();
             if (auditProperty == null)
             {
                 return Response.Error("表缺少审核状态字段：AuditStatus");
@@ -2383,7 +2334,7 @@ namespace JIYUWU.Core.Common
             }
             Response = repository.DbContextBeginTransaction(() =>
             {
-                //2023.11.26增加审批日志
+                //审批日志
                 WorkFlowManager.AddAuditLog<T>(keys, auditStatus, auditReason);
                 repository.UpdateRange(auditList, updateFileds.Select(x => x.Name).ToArray(), true);
                 if (base.AuditOnExecuted != null)
@@ -2402,7 +2353,7 @@ namespace JIYUWU.Core.Common
 
 
         /// <summary>
-        /// 反审2023.11.26
+        /// 反审
         /// </summary>
         /// <param name="keys"></param>
         /// <param name="auditStatus"></param>
@@ -2555,7 +2506,7 @@ namespace JIYUWU.Core.Common
 
 
         /// <summary>
-        /// 2021.07.04增加code="-1"强制返回，具体使用见：后台开发文档->后台基础代码扩展实现
+        ///code="-1"强制返回，具体使用见：后台开发文档->后台基础代码扩展实现
         /// </summary>
         /// <returns></returns>
         private bool CheckResponseResult()

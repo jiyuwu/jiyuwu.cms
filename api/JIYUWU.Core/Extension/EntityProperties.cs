@@ -1216,43 +1216,6 @@ namespace JIYUWU.Core.Extension
             return string.Empty;
         }
 
-        /// <summary>
-        /// 将实体映射到输出到ApiOutput实体上,如果没有输入实体，则返回null
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        //public static object MapToOutput<T>( this T entity, Type type = null)
-        //{
-        //    Type sourceType = typeof(T);
-        //    //list转换
-        //    if (sourceType is System.Collections.IList)
-        //    {
-        //        System.Collections.IList list = entity as System.Collections.IList;
-        //        sourceType = list[0].GetType();
-        //    }
-        //    if (type == null)
-        //    {
-        //        EntityAttribute attribute = sourceType.GetCustomAttribute<EntityAttribute>();
-        //        if (attribute == null || attribute.ApiOutput == null)
-        //            return null;
-        //        type = attribute.ApiOutput;
-        //    }
-
-        //    object outPutObject = Activator.CreateInstance(type);
-        //    PropertyInfo[] outPutPropertyInfo = type.GetProperties();
-
-        //    PropertyInfo[] propertyInfo = sourceType.GetProperties();
-        //    foreach (var property in outPutPropertyInfo)
-        //    {
-        //        PropertyInfo info= propertyInfo.Where(x => x.Name == property.Name).FirstOrDefault();
-        //        if (info!=null)
-        //        {
-        //            property.SetValue(outPutObject, info.GetValue(entity));
-        //        }
-        //    }
-        //    return outPutObject;
-        //}
-
         private static object MapToInstance(this Type reslutType, object sourceEntity, PropertyInfo[] sourcePro, PropertyInfo[] reslutPro, string[] sourceFilterField, string[] reslutFilterField, string mapType = null)
         {
             mapType = mapType ?? GetMapType(reslutType);
@@ -1487,12 +1450,6 @@ namespace JIYUWU.Core.Extension
             if (DefaultFields == null) return;
             var properties = typeof(T).GetProperties().Where(x => DefaultFields.Contains(x.Name));
             if (!properties.Any()) return;
-
-            //如果某些表有相同的字段但不需要设置值，在这此执行
-            //if (nameof(T)==nameof(表model))
-            //{
-            //    return;
-            //}
 
             //在这里给表对象设置默认值
             foreach (var item in properties)

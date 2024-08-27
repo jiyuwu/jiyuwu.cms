@@ -366,9 +366,6 @@ namespace JIYUWU.Core.Common
             var details = DbContext.Set<TDetail>();
             Expression<Func<TDetail, object>> selectExpression = detailKeyName.GetExpression<TDetail, object>();
             Expression<Func<TDetail, bool>> whereExpression = keyName.CreateExpression<TDetail>(keyValue, LinqExpressionType.Equal);
-            //这里有问题， Expression<Func<TDetail, object>>会转换为查询所有字段20231020
-            //List<object> detailKeys = details.Where(whereExpression).Select(selectExpression).ToList();
-
             List<object> detailKeys = details.Where(whereExpression).ToList().Select(selectExpression.Compile()).ToList();
             //获取主键默认值
             //string keyDefaultVal = property.PropertyType==typeof(string)?"": property.PropertyType.Assembly.CreateInstance(property.PropertyType.FullName).ToString();
@@ -423,9 +420,7 @@ namespace JIYUWU.Core.Common
                     //获取所有修改的key,如果从数据库查来的key,不在修改中的key，则为删除的数据
                     keys.Add(val);
                     x.SetModifyDefaultVal();
-                    // Update<TDetail>(x, updateDetailFields);
                     updateList.Add(x);
-                    //  repository.DbContext.Entry<TDetail>(x).State = EntityState.Modified;
                     editCount++;
                 }
             });
@@ -594,36 +589,6 @@ namespace JIYUWU.Core.Common
         public virtual List<TEntity> FromSql(string sql, params SugarParameter[] SugarParameters)
         {
             return DbContext.Ado.SqlQuery<TEntity>(sql, SugarParameters).ToList();
-        }
-
-        /// <summary>
-        /// 执行sql
-        /// 使用方式 FormattableString sql=$"select * from xx where name ={xx} and pwd={xx1} "，
-        /// FromSqlInterpolated内部处理sql注入的问题，直接在{xx}写对应的值即可
-        /// 注意：sql必须 select * 返回所有TEntity字段，
-        /// </summary>
-        /// <param name="formattableString"></param>
-        /// <returns></returns>
-        //public virtual ISugarQueryable<TEntity> FromSqlInterpolated([NotNull] FormattableString sql)
-        //{
-        //    //DBSet.FromSqlInterpolated(sql).Select(x => new { x,xxx}).ToList();
-        //    return DbContext.Ado.SqlQuery<TEntity>(sql);
-        //}
-
-        /// <summary>
-        /// 取消上下文跟踪
-        /// </summary>
-        /// <param name="entity"></param>
-        public virtual void Detached(TEntity entity)
-        {
-            // DbContext.Entry(entity).State = EntityState.Detached;
-        }
-        public virtual void DetachedRange(IEnumerable<TEntity> entities)
-        {
-            //foreach (var entity in entities)
-            //{
-            //    DbContext.Entry(entity).State = EntityState.Detached;
-            //}
         }
     }
 }

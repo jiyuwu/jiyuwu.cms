@@ -24,7 +24,6 @@ namespace JIYUWU.Core.CacheManager
                 s.PhoneNo,
                 s.DbServiceName
             })
-                //.Where(x => x.DatabaseName != null && x.DbIpAddress != null && x.UserId != null && x.Pwd != null)
                 .ToList()
                 .Select(s => new Base_DbService()
                 {

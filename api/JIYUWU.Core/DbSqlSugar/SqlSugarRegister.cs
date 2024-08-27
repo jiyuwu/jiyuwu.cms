@@ -23,7 +23,7 @@ namespace JIYUWU.Core.DbSqlSugar
 
             return new ConnectionConfig()
             {
-                DbType = dbType,// SqlSugar.DbType.SqlServer, 
+                DbType = dbType,
                 ConnectionString = DbServerProvider.SysConnectingString,
                 IsAutoCloseConnection = true,
                 ConfigId = "default",
@@ -31,7 +31,6 @@ namespace JIYUWU.Core.DbSqlSugar
                 {
                     PgSqlIsAutoToLower = false,
                     IsAutoToUpper = false,
-                    // DatabaseModel = DbType.PostgreSQL 
                 },
                 ConfigureExternalServices = GetConfigureExternalServices()
             };
@@ -45,12 +44,11 @@ namespace JIYUWU.Core.DbSqlSugar
         /// <returns></returns>
         private static ConnectionConfig GetEmptyConnectionConfig()
         {
-            //Console.WriteLine(AppSetting.GetSection("ConnectionStrs")["EmptyDbContext"]);
             var dbType = DbManger.GetDbType();
             //模板空库(租户动态分才使用)
             return new ConnectionConfig()
             {
-                DbType = dbType,// SqlSugar.DbType.SqlServer,
+                DbType = dbType,
                 ConnectionString = AppSetting.GetSection("ConnectionStrs")["EmptyDbContext"],
                 IsAutoCloseConnection = true,
                 ConfigId = "EmptyDbContext",
@@ -74,8 +72,8 @@ namespace JIYUWU.Core.DbSqlSugar
             var configs = DbRelativeCache.DbContextConnection
                 .Where(x => x.Key.EndsWith("DbContext") || x.Key == "default").Select(s => new ConnectionConfig()
                 {
-                    //2024.01.22增加分库使用不同类型的数据库
-                    DbType = SqlSugarDbType.GetType(s.Key, dbType),// SqlSugar.DbType.SqlServer,
+                    //分库使用不同类型的数据库
+                    DbType = SqlSugarDbType.GetType(s.Key, dbType),
                     ConnectionString = s.Value,
                     IsAutoCloseConnection = true,
                     ConfigId = s.Key,
@@ -84,7 +82,6 @@ namespace JIYUWU.Core.DbSqlSugar
                         PgSqlIsAutoToLower = false,
                         IsAutoToUpper = false
                     },
-                    //https://www.donet5.com/Home/Doc?typeId=1182
                     ConfigureExternalServices = GetConfigureExternalServices()
                 }).ToList();
 
@@ -126,14 +123,12 @@ namespace JIYUWU.Core.DbSqlSugar
         /// <returns></returns>
         private static ConfigureExternalServices GetConfigureExternalServices()
         {
-            //https://www.donet5.com/Home/Doc?typeId=1182
             return new ConfigureExternalServices()
             {
                 EntityService = (property, column) =>
                 {
                     if (DBType.Name == "DM")
                     {
-                        // var attributes = property.GetCustomAttributes(true);//get all attributes 
                         column.DbColumnName = property.Name.ToUpper();
                     }
                 }

@@ -27,8 +27,6 @@ namespace JIYUWU.Core.Language
         }
         public static void CreateLanguagePack(this ISqlSugarClient context)
         {
-            //FormattableString sql = null;
-           //var context = DbManger.BaseDbContext;
             var lang = context.Set<Base_Language>()
                 .Select(s => new
                 {

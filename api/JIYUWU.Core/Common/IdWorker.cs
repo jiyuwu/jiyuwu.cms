@@ -2,6 +2,7 @@
 {
     public class IdWorker
     {
+        // 静态变量声明
         private static long machineId;
         private static long datacenterId;
         private static long sequence = 0L;
@@ -19,6 +20,7 @@
 
         private static object lockSnowObj = new object();
 
+        // 构造函数，初始化machineId和datacenterId
         public IdWorker(long machineId = 1, long datacenterId = 1)
         {
             if (machineId > maxMachineId || machineId < 0)
@@ -33,6 +35,7 @@
             IdWorker.datacenterId = datacenterId;
         }
 
+        // 生成下一个唯一ID
         public long NextId()
         {
             lock (lockSnowObj)
@@ -66,6 +69,7 @@
             }
         }
 
+        // 等待直到下一毫秒
         private long TilNextMillis(long lastTimestamp)
         {
             long timestamp = TimeGen();
@@ -76,9 +80,11 @@
             return timestamp;
         }
 
+        // 获取当前时间戳
         private long TimeGen()
         {
             return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
+
     }
 }

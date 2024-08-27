@@ -102,12 +102,6 @@ namespace JIYUWU.Core.DbSqlSugar
         {
             return sqlSugarClient.UpdateRange<TSource>(new List<TSource>() { entity }, properties, saveChanges);
         }
-
-        //public static int Update<TSource>(this SqlSugarScope sqlSugarScope, TSource entity, string[] properties, bool saveChanges = false) where TSource : class, new()
-        //{
-        //    return sqlSugarScope.UpdateRange<TSource>(new List<TSource>() { entity }, properties, saveChanges);
-        //}
-
         public static int UpdateRange<TSource>(this ISqlSugarClient sqlSugarClient, IEnumerable<TSource> entities, string[] properties, bool saveChanges = false) where TSource : class, new()
         {
             if (entities.Count() == 0)
@@ -213,7 +207,6 @@ namespace JIYUWU.Core.DbSqlSugar
         }
         public static ISqlSugarClient SetTimout(this ISqlSugarClient sqlSugarClient, int time)
         {
-            // sqlSugarClient.Ado.CommandTimeOut = time;
             return sqlSugarClient;
         }
 

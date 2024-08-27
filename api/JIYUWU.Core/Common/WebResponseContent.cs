@@ -20,7 +20,6 @@ namespace JIYUWU.Core.Common
         public bool Status { get; set; }
         public string Code { get; set; }
         public string Message { get; set; }
-        //public string Message { get; set; }
         public object Data { get; set; }
 
         public WebResponseContent OK()
@@ -149,7 +148,6 @@ namespace JIYUWU.Core.Common
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }
-            //writelog
         }
     }
 }

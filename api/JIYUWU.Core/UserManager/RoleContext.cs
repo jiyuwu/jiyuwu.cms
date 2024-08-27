@@ -157,10 +157,6 @@ namespace JIYUWU.Core.UserManager
             if (UserContext.IsRoleIdSuperAdmin(roleId)) return roles;
 
             var list = GetChildren(roles, roleId);
-            //if (list.Any(x => x.Id == roleId))
-            //{
-            //    return list.Where(x => x.Id != roleId).ToList();
-            //}
             return list;
         }
 

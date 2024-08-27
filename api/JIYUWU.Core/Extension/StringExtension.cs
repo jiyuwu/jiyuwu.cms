@@ -56,7 +56,6 @@ namespace JIYUWU.Core.Extension
                 return null;
             userId = userId ?? UserContext.Current.UserInfo.User_Id;
             return $"{urlPath}{(urlPath.IndexOf("?token") > 0 ? "&" : "?")}uid={userId}&rt_v={DateTime.Now.ToString("HHmmss")}";
-            //  return urlPath + ((urlPath.IndexOf("?token") > 0 ? "&" : "?") + "uid=" + userId);
         }
 
         public static bool IsUrl(this string str)
@@ -212,26 +211,7 @@ namespace JIYUWU.Core.Extension
             if (string.IsNullOrEmpty(str)) return false;
 
             return Regex.IsMatch(str, @"^[+-]?\d*[.]?\d*$");
-            //int precision = 32;
-            //int scale = 5;
-            //try
-            //{
-            //    if (string.IsNullOrEmpty(formatString))
-            //    {
-            //        precision = 10;
-            //        scale = 2;
-            //    }
-            //    else
-            //    {
-            //        string[] numbers = formatString.Split(',');
-            //        precision = Convert.ToInt32(numbers[0]);
-            //        scale = numbers.Length == 0 ? 2 : Convert.ToInt32(numbers[1]);
-            //    }
-            //}
-            //catch { };
-            //return IsNumber(str, precision, scale);
         }
-        /**/
         /// <summary>
         /// 判断一个字符串是否为合法数字(指定整数位数和小数位数)
         /// </summary>
@@ -1040,25 +1020,6 @@ namespace JIYUWU.Core.Extension
             return dt.Rows[0][columnName];
         }
 
-        /// <summary>
-        /// 将object转换为string类型信息。
-        /// </summary>
-        /// <param name="o">object。</param>
-        /// <param name="t">默认值。</param>
-        /// <returns>string。</returns>
-        //public static string ToString(this object o, string t)
-        //{
-        //    string info = string.Empty;
-        //    if (o == null)
-        //    {
-        //        info = t;
-        //    }
-        //    else
-        //    {
-        //        info = o.ToString(t);
-        //    }
-        //    return info;
-        //}
 
         /// <summary>
         /// 将DateTime?转换为string类型信息。

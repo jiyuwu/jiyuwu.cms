@@ -23,10 +23,9 @@ namespace JIYUWU.Core.DbSqlSugar
                     {
                         ConfigId = configId,
                         ConnectionString = DbServerProvider.ServiceConnectingString,
-                        // //2024.01.22增加分库使用不同类型的数据库
-                        DbType = SqlSugarDbType.GetType(typeof(ServiceDbContext).Name, GetDbType()),// SqlSugar.DbType.SqlServer,
+                        //分库使用不同类型的数据库
+                        DbType = SqlSugarDbType.GetType(typeof(ServiceDbContext).Name, GetDbType()),
                         IsAutoCloseConnection = true,
-                        //https://www.donet5.com/Home/Doc?typeId=1182
                         ConfigureExternalServices = new ConfigureExternalServices()
                         {
                             EntityService = (property, column) =>
@@ -57,9 +56,8 @@ namespace JIYUWU.Core.DbSqlSugar
                 {
                     ConfigId = configId,
                     ConnectionString = DbServerProvider.GetServiceConnectingString(serviceId),
-                    DbType = SqlSugarDbType.GetType(typeof(ServiceDbContext).Name, GetDbType()),// SqlSugar.DbType.SqlServer,
+                    DbType = SqlSugarDbType.GetType(typeof(ServiceDbContext).Name, GetDbType()),
                     IsAutoCloseConnection = true,
-                    //https://www.donet5.com/Home/Doc?typeId=1182
                     ConfigureExternalServices = new ConfigureExternalServices()
                     {
                         EntityService = (property, column) =>

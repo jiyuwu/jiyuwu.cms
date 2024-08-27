@@ -196,7 +196,7 @@ namespace JIYUWU.Core.UserManager
         /// <returns></returns>
         public Permissions GetPermissions(Func<Permissions, bool> func)
         {
-            // 2022.03.26增移动端加菜单类型判断
+            //移动端加菜单类型判断
             return GetPermissions(RoleIds).Where(func).Where(x => x.MenuType == MenuType).FirstOrDefault();
         }
 
@@ -253,7 +253,7 @@ namespace JIYUWU.Core.UserManager
         {
             if (IsRoleIdSuperAdmin(roleIds))
             {
-                //2020.12.27增加菜单界面上不显示，但可以分配权限
+                //菜单界面上不显示，但可以分配权限
                 var permissions = DbServerProvider.DbContext.Set<Base_Menu>()
                     .Where(x => x.Enable == 1 || x.Enable == 2)
                     .Select(a => new Permissions
@@ -262,7 +262,6 @@ namespace JIYUWU.Core.UserManager
                         ParentId = a.ParentId,
                         //默认将表名转换成小写，权限验证时不再转换
                         TableName = (a.TableName ?? "").ToLower(),
-                        //MenuAuth = a.Auth,
                         UserAuth = a.Auth,
                         // 移动端加菜单类型
                         MenuType = a.MenuType ?? 0
@@ -282,7 +281,6 @@ namespace JIYUWU.Core.UserManager
                     && currnetVeriosn == cacheService.Get(roleKey))
                 {
                     continue;
-                    //return rolePermissions.ContainsKey(roleId) ? rolePermissions[roleId] : new List<Permissions>();
                 }
 
                 //锁定每个角色，通过安全字典减少锁粒度，否则多个同时角色获取缓存会导致阻塞
@@ -294,17 +292,10 @@ namespace JIYUWU.Core.UserManager
                         && currnetVeriosn == cacheService.Get(roleKey))
                     {
                         continue;
-                        //  return rolePermissions.ContainsKey(roleId) ? rolePermissions[roleId] : new List<Permissions>();
                     }
 
                     //没有redis/memory缓存角色的版本号或与当前服务器的角色版本号不同时，刷新缓存
                     var dbContext = DbServerProvider.DbContext;
-                    //   var query5 = db.Queryable<Order>()
-                    //.LeftJoin<Custom>((o, cus) => o.CustomId == cus.Id)//多个条件用&&
-                    //.LeftJoin<OrderDetail>((o, cus, oritem) => o.Id == oritem.OrderId)
-                    //.Where(o => o.Id == 1)
-                    //.Select((o, cus, oritem) => new ViewOrder { Id = o.Id, CustomName = cus.Name })
-                    //.ToList();  //ViewOrder是一个新建的类，更多Select用法看下面文档
 
                     List<Permissions> _permissions = dbContext.SqlSugarClient.Queryable<Base_Menu>()
                         .LeftJoin<Base_RoleAuth>((a, b) => a.Menu_Id == b.Menu_Id)
@@ -565,15 +556,7 @@ namespace JIYUWU.Core.UserManager
                 if (Context.Request.Headers.TryGetValue("deptId", out StringValues value))
                 {
                     var val = value.GetGuid() ?? Guid.NewGuid();
-                    //if (Current.IsSuperAdmin)
-                    //{
                     return val;
-                    //}
-                    //var roleIds = Current.RoleIds;
-                    //if (RoleContext.GetRoles(x => roleIds.Contains(x.Id)).Any(x => x.DbServiceId == val))
-                    //{
-                    //    return val;
-                    //}
                 }
                 return Guid.Empty;
             }
@@ -591,7 +574,7 @@ namespace JIYUWU.Core.UserManager
                 }
                 var roleIds = RoleIds;
                 var dbIds = RoleContext.GetRoles(x => roleIds.Contains(x.Id)).Select(s => s.DbServiceId).ToList();
-                return DbCache.GetDbInfo(x => dbIds.Contains(x.DbServiceId));//.Select(s => new { s.DbServiceName, s.DbServiceId });
+                return DbCache.GetDbInfo(x => dbIds.Contains(x.DbServiceId));
             }
         }
     }

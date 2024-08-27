@@ -108,8 +108,6 @@ namespace JIYUWU.Core.Common
     }
     public static class DictionaryHandler
     {
-        /*2020.05.01增加根据用户信息加载字典数据源sql*/
-
         /// <summary>
         /// 获取自定义数据源sql
         /// </summary>
@@ -123,8 +121,6 @@ namespace JIYUWU.Core.Common
                 case "部门级联":
                     originalSql = GetDeptSql(originalSql);
                     break;
-                //2020.05.24增加绑定table表时，获取所有的角色列表
-                //注意，如果是2020.05.24之前获取的数据库脚本
                 //请在菜单【下拉框绑定设置】添加一个字典编号【t_roles】,除了字典编号，其他内容随便填写
                 case "roles":
                 case "t_roles":

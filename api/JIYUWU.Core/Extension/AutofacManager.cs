@@ -58,24 +58,6 @@ namespace JIYUWU.Core.Extension
                     Console.WriteLine(_compilation.Name + ex.Message);
                 }
             }
-            //插件式开发
-            //try
-            //{
-            //    var provider = services.BuildServiceProvider();
-            //    IWebHostEnvironment webHostEnvironment = provider.GetRequiredService<IWebHostEnvironment>();
-            //    string rootPath = (webHostEnvironment.ContentRootPath + "\\plugs").ReplacePath();
-            //    foreach (var item in Directory.GetFiles(rootPath).Where(x => x.EndsWith(".dll")))
-            //    {
-            //        string path = ($"{item}").ReplacePath();
-            //        AssemblyName assemblyName = Assembly.LoadFrom(path).GetName(); ;
-            //        assemblyList.Add(AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName));
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine($"解析类库异常：{ex.Message + ex.StackTrace}");
-            //}
-
 
             var data = builder.RegisterAssemblyTypes(assemblyList.ToArray())
                .Where(type => baseType.IsAssignableFrom(type) && !type.IsAbstract);
@@ -106,13 +88,7 @@ namespace JIYUWU.Core.Extension
                 builder.RegisterType<MemoryCacheService>().As<ICacheService>().SingleInstance();
             }
 
-            //DapperParseGuidTypeHandler.InitParseGuid();//Dapper中Guid类型处理
             DbCache.Init();
-            //kafka注入
-            //if (AppSetting.Kafka.UseConsumer)
-            //    builder.RegisterType<KafkaConsumer<string, string>>().As<IKafkaConsumer<string, string>>().SingleInstance();
-            //if (AppSetting.Kafka.UseProducer)
-            //    builder.RegisterType<KafkaProducer<string, string>>().As<IKafkaProducer<string, string>>().SingleInstance();
             return services;
         }
 

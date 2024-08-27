@@ -7,7 +7,7 @@ namespace JIYUWU.Core.DbSqlSugar
 {
     public partial class DbServerProvider : DbManger
     {
-        ////系统库
+        //系统库
         private static readonly string DefaultConnName = nameof(BaseDbContext);
 
         static DbServerProvider()
@@ -58,11 +58,6 @@ namespace JIYUWU.Core.DbSqlSugar
             return DbRelativeCache.GetDbEntityType(dbServer).Name;
         }
 
-
-        //public static ISqlSugarClient GetSqlSugarClient(string connectionKey = null)
-        //{
-        //    return DbManger.GetConnection(connectionKey);
-        //}
         /// <summary>
         /// 根据dbcontext名称获取数据库链接
         /// </summary>

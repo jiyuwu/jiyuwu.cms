@@ -16,7 +16,6 @@ namespace JIYUWU.Core.DbSqlSugar
         private static Dictionary<string, Type> DbContextTypes = new Dictionary<string, Type>();
         private static Dictionary<string, Type> DbEntityTypes = new Dictionary<string, Type>();
 
-        //EFDbContext文件夹与appsettings.json下Connection xxDbContext一致
         public static Dictionary<string, string> DbContextConnection = new Dictionary<string, string>();
 
         static DbRelativeCache()
@@ -101,24 +100,6 @@ namespace JIYUWU.Core.DbSqlSugar
             Type dbContextType = DbContextTypes[dbService];
             string name = dbContextType.Name.Replace("DbContext", "");
             return DbEntityTypes[$"{name}Entity"];
-
-            //if (dbServer == typeof(ServiceDbContext).Name)
-            //{
-            //   return typeof(ServiceEntity).Name;
-            //}
-            //if (dbServer == typeof(TestDbContext).Name) //测试库
-            //{
-            //   return typeof(TestEntity).Name;
-            //}
-            //////其他自定义数据库
-            //if (dbServer == typeof(自定义DbContext).Name)
-            //{
-            //    return typeof(自定义Entity).Name;
-            //}
-            //else//系统库
-            //{
-            //    return typeof(SysEntity).Name;
-            //}
         }
 
 

@@ -19,16 +19,7 @@ namespace JIYUWU.Core.Filter
         /// <summary>
         /// 查询界面table 统计、求和、平均值等
         /// 实现方式
-        ///SummaryExpress = (ISugarQueryable<App_TransactionAvgPrice> queryable) =>
-        //                {
-        //                return queryable.GroupBy(x => 1).Select(x => new
-        //                {
-        //                    AvgPrice = x.Average(o => o.AvgPrice),
-        //                    Enable = x.Sum(o => o.Enable)
-        //            }).FirstOrDefault();
-        //};
-        /// </summary>
-        //   protected Func<IGrouping<T, T>, object> SummaryExpress = null;
+
         protected Func<ISugarQueryable<T>, object> SummaryExpress = null;
 
         /// <summary>

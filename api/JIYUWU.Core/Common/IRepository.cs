@@ -277,9 +277,6 @@ namespace JIYUWU.Core.Common
 
         void Add<T>(T entities, bool saveChanges = false) where T : class, new();
 
-        // void AddRange(IEnumerable<TEntity> entities, bool SaveChanges = false);
-
-
 
         void AddRange<T>(List<T> entities, bool saveChanges = false)
            where T : class, new();
@@ -294,24 +291,5 @@ namespace JIYUWU.Core.Common
         int ExecuteSqlCommand(string sql, params SugarParameter[] SugarParameters);
 
         List<TEntity> FromSql(string sql, params SugarParameter[] SugarParameters);
-
-        /// <summary>
-        /// 执行sql
-        /// 使用方式 FormattableString sql=$"select * from xx where name ={xx} and pwd={xx1} "，
-        /// FromSqlInterpolated内部处理sql注入的问题，直接在{xx}写对应的值即可
-        /// 注意：sql必须 select * 返回所有TEntity字段，
-        /// </summary>
-        /// <param name="formattableString"></param>
-        /// <returns></returns>
-    //    ISugarQueryable<TEntity> FromSqlInterpolated([System.Diagnostics.CodeAnalysis.NotNull] FormattableString sql);
-
-
-        /// <summary>
-        /// 取消上下文跟踪(2021.08.22)
-        /// 更新报错时，请调用此方法：The instance of entity type 'XXX' cannot be tracked because another instance with the same key value for {'XX'} is already being tracked.
-        /// </summary>
-        /// <param name="entity"></param>
-        void Detached(TEntity entity);
-        void DetachedRange(IEnumerable<TEntity> entities);
     }
 }

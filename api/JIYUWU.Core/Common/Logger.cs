@@ -20,18 +20,6 @@ namespace JIYUWU.Core.Common
             Task.Run(() =>
             {
                 Start();
-                //if (DBType.Name != "MySql")
-                //{
-                //    return;
-                //}
-                //try
-                //{ 
-                //    DBServerProvider.SqlDapper.ExcuteNonQuery("set global local_infile = 'ON';", null);
-                //}
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine($"日志启动调用mysql数据库异常：{ex.Message},{ex.StackTrace}");
-                //}
             });
         }
 
@@ -271,10 +259,6 @@ namespace JIYUWU.Core.Common
                 try
                 {
                     log.RequestParameter = context.GetRequestParameters();
-                    //if (log.RequestParameter != null)
-                    //{
-                    //    log.RequestParameter = HttpUtility.UrlDecode(log.RequestParameter, Encoding.UTF8);
-                    //}
                 }
                 catch (Exception ex)
                 {
@@ -286,11 +270,6 @@ namespace JIYUWU.Core.Common
     }
     public class ActionObserver
     {
-        //public ActionObserver(IHttpContextAccessor httpContextAccessor)
-        //{
-        //    this.RequestDate = DateTime.Now;
-        //    this.HttpContext = httpContextAccessor.HttpContext;
-        //}
         /// <summary>
         /// 记录action执行的开始时间
         /// </summary>

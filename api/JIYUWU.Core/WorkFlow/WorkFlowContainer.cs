@@ -19,16 +19,22 @@ namespace JIYUWU.Core.WorkFlow
         private static List<WorkFlowFormOptions> _flowFormOptions = new List<WorkFlowFormOptions>();
         private static Dictionary<string, string[]> _editFields = new Dictionary<string, string[]>();
 
+        private static readonly object _lock = new object();
+
         public static WorkFlowContainer Instance
         {
             get
             {
-                if (_instance != null)
+                if (_instance == null)
                 {
-                    return _instance;
-
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new WorkFlowContainer();
+                        }
+                    }
                 }
-                _instance = new WorkFlowContainer();
                 return _instance;
             }
         }
@@ -204,7 +210,7 @@ namespace JIYUWU.Core.WorkFlow
             {
                 return null;
             }
-            //2024.02.05增加租户区分
+            //租户区分
             if (AppSetting.UseDynamicShareDB && !_workFlowTableOptions.Any(c => c.WorkTable == tableName && c.DbServiceId == UserContext.CurrentServiceId))
             {
                 return null;
@@ -213,7 +219,7 @@ namespace JIYUWU.Core.WorkFlow
             string key = typeof(T).GetKeyProperty().GetValue(entity).ToString();
 
             var flowTable = DbServerProvider.DbContext.Set<Base_WorkFlowTable>().Includes(c => c.Base_WorkFlowTableStep)
-                   //2024.02.05增加租户区分
+                   //租户区分
                    .WhereIF(AppSetting.UseDynamicShareDB, c => c.DbServiceId == UserContext.CurrentServiceId)
                    .Where(c => c.WorkTableKey == key && c.WorkTable == tableName && (c.AuditStatus != (int)AuditStatus.草稿 && c.AuditStatus != (int)AuditStatus.待提交))
                    .OrderByDescending(x => x.CreateDate)
@@ -230,7 +236,6 @@ namespace JIYUWU.Core.WorkFlow
                                              && x.WorkTable == tableName
                                              && x.FilterList.Any(c => c.StepAttrType == StepType.start.ToString()
                                              && c.FieldFilters.CheckFilter<T>(entities, c.Expression)))
-                      //  && c.Expression != null && entities.Any(((Func<T, bool>)c.Expression))))
                       .OrderByDescending(x => x.Weight)
                       .FirstOrDefault();
                 if (filter != null)
@@ -287,7 +292,7 @@ namespace JIYUWU.Core.WorkFlow
                     WorkName = workFlow.WorkName,
                     Weight = workFlow.Weight,
                     DbServiceId=workFlow.DbServiceId,
-                    //2023.11.12增加默认状态
+                    //默认状态
                     DefaultAuditStatus = _flowFormOptions.Where(x => x.TableName == workFlow.WorkTable).Select(s => s.DefaultAuditStatus).FirstOrDefault(),
                     FilterList = new List<FilterOptions>()
                 };
@@ -325,7 +330,6 @@ namespace JIYUWU.Core.WorkFlow
                         Console.WriteLine(message + ex.Message);
                         if (showError)
                         {
-                            //  throw new Exception(message);
                             return webResponse.Error(message);
                         }
                         success = false;

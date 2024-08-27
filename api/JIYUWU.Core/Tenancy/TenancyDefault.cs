@@ -25,6 +25,7 @@ namespace UMES.Core.Tenancy
             return entity;
         }
 
+        // 批量设置列表中所有实体的租户字段值
         public static List<T> SetTenancyValue<T>(this List<T> list) where T : class
         {
             PropertyInfo property = GetTenancyProperty<T>();
@@ -54,6 +55,7 @@ namespace UMES.Core.Tenancy
             return query;
         }
 
+        // 获取租户字段属性信息
         private static PropertyInfo GetTenancyProperty<T>()
         {
             if (AppSetting.TenancyField == null)
@@ -62,5 +64,6 @@ namespace UMES.Core.Tenancy
             }
             return typeof(T).GetProperty(AppSetting.TenancyField);
         }
+
     }
 }

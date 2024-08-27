@@ -76,7 +76,7 @@ namespace JIYUWU.Core.Common
         //是否使用用户权限(限制只能看到指定用户创建的数据,用户管理页面的操作列可以看到此功能,设置为1后生效)
         public static bool UserAuth { get; set; }
 
-        //2023.12.25所有静态文件访问授权
+        //所有静态文件访问授权
         public static bool FileAuth { get; set; }
         public static void Init(IServiceCollection services, IConfiguration configuration)
         {
@@ -107,7 +107,7 @@ namespace JIYUWU.Core.Common
 
             UseSnow = Configuration["UseSnow"]?.ToString() == "1";
             UserAuth = Configuration["UserAuth"]?.ToString() == "1";
-            //2023.12.25所有静态文件访问授权
+            //所有静态文件访问授权
             FileAuth = Configuration["FileAuth"]?.ToString() == "1";
             if (LogicDelField == "")
             {

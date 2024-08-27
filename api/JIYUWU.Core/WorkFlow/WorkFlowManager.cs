@@ -248,23 +248,6 @@ namespace JIYUWU.Core.WorkFlow
                         };
                     }
                 }
-                //var formType = tableOptions.Where(x => fields.Contains(x.ColumnName) && editType.Contains(x.EditType))
-                //   .Select(s => new { name = s.ColumnCnName, s.EditType }).ToList();
-                //if (formType.Count > 0)
-                //{
-                //    item[$"form:type"] = formType;
-                //}
-                ////2024.01.01增加加审批表单编辑
-                //if (index == enities.Count)
-                //{
-                //    string[] editFields = WorkFlowContainer.GetEditFields(typeof(T).Name);
-                //    if (editFields != null)
-                //    {
-                //        item["form:edit"] = tableOptions.Where(x => editFields.Contains(x.ColumnName))
-                //            .Select(s => new { field = s.ColumnName, name = s.ColumnCnName, dataKey = s.DropNo, type = s.EditType })
-                //            .ToList();
-                //    }
-                //}
                 list.Add(item);
             }
 
@@ -280,7 +263,6 @@ namespace JIYUWU.Core.WorkFlow
         {
             var table = DbServerProvider.DbContext.Set<Base_WorkFlowTable>()
                   .Where(x => x.WorkTable == (workFlowTableName ?? typeof(T).GetEntityTableName(false)) && x.WorkTableKey == workTableKey)
-                   // .Select(s => new { s.CurrentStepId,s.AuditStatus})
                    .FirstOrDefault();
             return table;
         }
@@ -304,8 +286,6 @@ namespace JIYUWU.Core.WorkFlow
                 Console.WriteLine($"未查到流程数据，id：{workFlow.WorkFlow_Id}");
                 return;
             }
-            //  workTable.CurrentOrderId = 1;
-
             //这里还未处理回退到上一个节点
 
             //重新设置第一个节点(有可能是返回上一个节点)
@@ -325,12 +305,9 @@ namespace JIYUWU.Core.WorkFlow
             });
             if (changeTableStatus)
             {
-                // dbContext.Entry(entity).State = EntityState.Detached;
                 autditProperty.SetValue(entity, 0);
-                // dbContext.Entry(entity).Property(autditProperty.Name).IsModified = true;
                 dbContext.Update<T>(entity, new string[] { autditProperty.Name });
             }
-            //dbContext.Entry(workTable).State = EntityState.Detached;
             dbContext.Update(workTable);
             dbContext.SaveChanges();
 
@@ -380,7 +357,6 @@ namespace JIYUWU.Core.WorkFlow
                 {
 
                     DbServerProvider.DbContext.SqlSugarClient.DeleteNav(list).Include(c => c.Base_WorkFlowTableStep).ExecuteCommand();
-                    //DbServerProvider.DbContext.SaveChanges();
                 }
                 auditStatus = (int)AuditStatus.待审核;
             }
@@ -392,7 +368,7 @@ namespace JIYUWU.Core.WorkFlow
             Base_WorkFlowTable workFlowTable = new Base_WorkFlowTable()
             {
                 WorkFlowTable_Id = workFlowTable_Id,
-                AuditStatus = auditStatus,//(int)AuditStatus.待审核,
+                AuditStatus = auditStatus,
                 Enable = 1,
                 WorkFlow_Id = workFlow.WorkFlow_Id,
                 WorkName = workFlow.WorkName,
@@ -432,8 +408,6 @@ namespace JIYUWU.Core.WorkFlow
                 FilterOptions filter = workFlow.FilterList
                     .Where(c => c.ParentIds.Contains(item.StepId) && c.FieldFilters.CheckFilter(entities, c.Expression))
                     .FirstOrDefault();
-                //&& c.Expression != null
-                //&& entities.Any(((Func<T, bool>)c.Expression))
                 //未找到满足条件的找无条件的节点
                 if (filter == null)
                 {
@@ -464,7 +438,7 @@ namespace JIYUWU.Core.WorkFlow
                     item.NextStepId = setp.StepId;
                     if (!steps.Any(x => x.StepId == setp.StepId))
                     {
-                        //2023.10.24生成多个节点
+                        //生成多个节点
                         if (!string.IsNullOrEmpty(setp.StepValue) && setp.StepValue.Contains(","))
                         {
                             var ids = setp.StepValue.Split(",");
@@ -481,7 +455,7 @@ namespace JIYUWU.Core.WorkFlow
                                     NextStepId = null,
                                     ParentId = setp.ParentId,
                                     StepType = setp.StepType,
-                                    StepValue = id,// setp.StepValue,
+                                    StepValue = id,
                                     OrderId = setp.OrderId,
                                     Enable = 1,
                                     CreateDate = DateTime.Now,
@@ -522,14 +496,6 @@ namespace JIYUWU.Core.WorkFlow
                     }
                 }
             }
-            //2023移除默认审批人
-            //foreach (var setp in steps)
-            //{
-            //    if (setp.StepType == (int)AuditType.用户审批)
-            //    {
-            //        setp.AuditId = setp.StepValue.GetInt();
-            //    }
-            //}
 
             //没有满足流程的数据不走流程
             int count = steps.Where(x => x.StepAttrType != StepType.start.ToString() && x.StepAttrType != StepType.end.ToString()).Count();
@@ -602,17 +568,11 @@ namespace JIYUWU.Core.WorkFlow
                 Remark = $"[{userInfo.UserTrueName}]提交了数据"
             };
 
-            //dbContext.Set<Base_WorkFlowTable>().Add(workFlowTable);
-            //dbContext.Set<Base_WorkFlowTableAuditLog>().Add(log);
-            //dbContext.SaveChanges();
-
             var entityContext = DbServerProvider.GetEntityDbContext<T>();
             entityContext.Update(entity, new string[] { auditProperty.Name }, true);
 
 
             var dbContext = DbServerProvider.DbContext;
-            //dbContext.Set<Base_WorkFlowTable>().Add(workFlowTable);
-            //dbContext.Set<Base_WorkFlowTableAuditLog>().Add(log);
             dbContext.SqlSugarClient.InsertNav(workFlowTable).Include(x => x.Base_WorkFlowTableStep).ExecuteCommand();
             if (workFlow.DefaultAuditStatus != AuditStatus.草稿 && workFlow.DefaultAuditStatus != AuditStatus.待提交)
             {
@@ -659,26 +619,6 @@ namespace JIYUWU.Core.WorkFlow
             }
             return null;
         }
-
-
-        /// <summary>
-        /// 审核
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <param name="status"></param>
-        /// <param name="remark"></param>
-        /// <param name="autditProperty"></param>
-        /// <param name="workFlowExecuting"></param>
-        /// <param name="workFlowExecuted"></param>
-        /// <returns></returns>
-        //public static WebResponseContent Audit<T>(T entity, AuditStatus status, string remark,
-        //    PropertyInfo autditProperty,
-        //     Func<T, AuditStatus, bool, WebResponseContent> workFlowExecuting,
-        //     Func<T, AuditStatus, List<int>, bool, WebResponseContent> workFlowExecuted,
-        //     bool init = false,
-        //     Action<T, List<int>> initInvoke = null
-        //    ) where T : class
 
         public static WebResponseContent Audit<T>(MyDbContext tableDbContext, T entity, AuditStatus status, string remark,
            PropertyInfo autditProperty = null,
@@ -916,11 +856,7 @@ namespace JIYUWU.Core.WorkFlow
                 SendMail(workFlow, filterOptions, nextStep, dbContext);
 
                 autditProperty.SetValue(entity, (int)status);
-                //dbContext.Set<Base_WorkFlowTable>().Update(workFlow);
-                //queryDbSet.Update(entity);
-                //dbContext.Set<Base_WorkFlowTableAuditLog>().Add(log);
-                //dbContext.SaveChanges();
-                dbContext.Update(workFlow);//.Include(x => x.Base_WorkFlowTableStep).ExecuteCommandAsync();
+                dbContext.Update(workFlow);
                 dbContext.Update(item);
                 dbContext.Add(log);
                 dbContext.SaveChanges();
@@ -973,25 +909,7 @@ namespace JIYUWU.Core.WorkFlow
                 }
             }
 
-            //queryDbSet.Update(entity);
-            //dbContext.Set<Base_WorkFlowTable>().Update(workFlow);
-            //dbContext.Set<Base_WorkFlowTableAuditLog>().Add(log);
-
-            //dbContext.SaveChanges();
-            //dbContext.Entry(workFlow).State = EntityState.Detached;
-
-            //tableDbContext.Entry(entity).State = EntityState.Detached;
-
-            //if (workFlowExecuted != null)
-            //{
-            //    webResponse = workFlowExecuted.Invoke(entity, status, GetAuditUserIds(nextStep?.StepType ?? 0, nextStep?.StepValue), isLast);
-            //}
-            //SendMail(workFlow, filterOptions, nextStep, dbContext);
-            //return webResponse;
-
-
-            //  dbContext.SqlSugarClient.InsertNav(workFlow).Include(x => x.Base_WorkFlowTableStep).ExecuteCommandAsync();
-            dbContext.Update(workFlow);//.Include(x => x.Base_WorkFlowTableStep).ExecuteCommandAsync();
+            dbContext.Update(workFlow);
             dbContext.Update(item);
             dbContext.Add(log);
             dbContext.SaveChanges();
@@ -1005,11 +923,6 @@ namespace JIYUWU.Core.WorkFlow
             {
                 _ = HttpManager.CallJsonApiAsync(apiModel).Result;
             }
-
-
-            //dbContext.Entry(workFlow).State = EntityState.Detached;
-
-            //tableDbContext.Entry(entity).State = EntityState.Detached;
 
             if (workFlowExecuted != null)
             {
@@ -1052,7 +965,7 @@ namespace JIYUWU.Core.WorkFlow
                 || (status == AuditStatus.审核未通过 && filterOptions.AuditRefuse == (int)AuditRefuse.返回上一节点)
                 || (status == AuditStatus.驳回 && filterOptions.AuditBack == (int)AuditBack.返回上一节点))
             {
-                //2023.12.01修复审批驳回到退到第一个节后无法审批的问题
+                //审批驳回到退到第一个节后也可审批
                 var preSteps = workFlow.Base_WorkFlowTableStep.Where(x => x.NextStepId == currentStep.StepId && x.StepAttrType == StepType.node.ToString()).ToList();
                 if (preSteps.Count > 0)
                 {
@@ -1063,8 +976,6 @@ namespace JIYUWU.Core.WorkFlow
                         preStep.AuditDate = null;
                         preStep.Auditor = null;
                         preStep.Remark = null;
-
-                        //workFlow.AuditStatus = (int)AuditStatus.审核中;
                         dbContext.Update(preStep);
                     }
                     workFlow.CurrentStepId = preSteps[0].StepId;
@@ -1076,7 +987,7 @@ namespace JIYUWU.Core.WorkFlow
                     workFlow.CurrentStepId = currentStep.StepId;
                     workFlow.StepName = currentStep.StepName;
                 }
-                //清空当前节点的审批信息(2024.05.21)
+                //清空当前节点的审批信息
                 workFlow.Base_WorkFlowTableStep.ForEach(x =>
                 {
                     if (x.StepId == currentStep.StepId)
@@ -1096,9 +1007,9 @@ namespace JIYUWU.Core.WorkFlow
                 || (status == AuditStatus.审核未通过 && filterOptions.AuditRefuse == (int)AuditRefuse.流程重新开始)
                 || (status == AuditStatus.驳回 && filterOptions.AuditBack == (int)AuditBack.流程重新开始))
             {
-                //2024.01.22设置重新审批的流程为初始化配置的状态
+                //设置重新审批的流程为初始化配置的状态
                 var auditStatus = WorkFlowContainer.GetFlowOptions(entity, workFlowTableName)?.DefaultAuditStatus;
-                //2024.04.16处理待提交流程判断
+                //处理待提交流程判断
                 if (auditStatus == null)
                 {
                     auditStatus = WorkFlowContainer.GetFlowOptions(c => c.WorkTable == workFlowTableName).Select(s => s.DefaultAuditStatus).FirstOrDefault();
@@ -1173,19 +1084,12 @@ namespace JIYUWU.Core.WorkFlow
                 };
                 dbContext.Add(auditLog);
             }
-            //autditProperty.SetValue(entity, (int)status);
-            //query.Update(entity);
-            //修改状态
-
-            // dbContext.Set<Base_WorkFlowTable>().Update(workFlow);
             dbContext.Update(workFlow);
             dbContext.UpdateRange(workFlow.Base_WorkFlowTableStep);
             dbContext.SaveChanges();
-            // dbContext.Entry(workFlow).State = EntityState.Detached;
 
             tableDbContext.Update<T>(entity);
             tableDbContext.SaveChanges();
-            //tableDbContext.Entry(entity).State = EntityState.Detached;
 
             //驳回或未通过
             //添加api或者sql执行
@@ -1336,15 +1240,12 @@ namespace JIYUWU.Core.WorkFlow
                 item.NextStepIds = flowStep.Where(c => c.StepId == item.StepId).Select(c => c.NextStepIds).FirstOrDefault();
             }
             add = add.Where(x => x.StepAttrType == StepType.node.ToString()).ToList();
-            //  var steps = repository.DbContext.Set<Base_WorkFlowStep>().Where(x => x.WorkFlow_Id == workFlow.WorkFlow_Id).ToList();
             var flowTable = DbServerProvider.DbContext.Set<Base_WorkFlowTable>()
                  .Where(x => x.WorkFlow_Id == workFlow.WorkFlow_Id
                  && (x.AuditStatus == (int)AuditStatus.待审核 || x.AuditStatus == (int)AuditStatus.审核中)
-                 // && x.Base_WorkFlowTableStep.Any(c => c.AuditStatus == null || c.AuditStatus == (int)AuditStatus.待审核)
                  ).Includes(x => x.Base_WorkFlowTableStep).ToList();
             List<Guid> updateFlowIds = new List<Guid>();
             List<Guid> ingroFlowIds = new List<Guid>();
-            //List<Guid> updateStepIds = new List<Guid>();
             foreach (var workFlowTable in flowTable)
             {
                 for (int i = 0; i < workFlowTable.Base_WorkFlowTableStep.Count; i++)
@@ -1356,7 +1257,6 @@ namespace JIYUWU.Core.WorkFlow
                     if (!string.IsNullOrEmpty(parentStepId))
                     {
                         step.ParentId = parentStepId;
-                        // updateStepIds.Add(step.Sys_WorkFlowTableStep_Id);
                     }
                     //第三次增加节点时，添加到开始后面，节点orderid没有值，下一个节点也不对
                     //找出新加的节点前一个节点(上级)

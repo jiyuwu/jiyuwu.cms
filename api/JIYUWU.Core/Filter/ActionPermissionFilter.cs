@@ -36,16 +36,11 @@ namespace JIYUWU.Core.Filter
         }
         private WebResponseContent OnActionExecutionPermission(ActionExecutingContext context)
         {
-            //!context.Filters.Any(item => item is IFixedTokenFilter))固定token的是否验证权限
-            //if ((context.Filters.Any(item => item is IAllowAnonymousFilter)
-            //    && !context.Filters.Any(item => item is IFixedTokenFilter))
-            //    || UserContext.Current.IsSuperAdmin
-            //    )
             if (context.Filters.Any(item => item is IAllowAnonymousFilter)
                 || UserContext.Current.IsSuperAdmin)
                 return ResponseContent.OK();
 
-            //演示环境除了admin帐号，其他帐号都不能增删改等操作
+            //其他帐号都不能增删改等操作
             if (!_userContext.IsSuperAdmin && AppSetting.GlobalFilter.Enable
                 && AppSetting.GlobalFilter.Actions.Contains(((Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)context.ActionDescriptor).ActionName))
             { 
@@ -66,7 +61,6 @@ namespace JIYUWU.Core.Filter
                 }
                 if (string.IsNullOrEmpty(ActionPermission.TableName))
                 {
-                    //responseType = ResponseType.ParametersLack;
                     return ResponseContent.Error(ResponseType.ParametersLack);
                 }
             }
@@ -90,7 +84,7 @@ namespace JIYUWU.Core.Filter
                     return ResponseContent.Error(ResponseType.NoRolePermissions);
                 }
             }
-            //2020.05.05移除x.TableName.ToLower()转换,获取权限时已经转换成为小写
+            //获取权限时已经转换成为小写
             var actionAuth = _userContext.GetPermissions(x => x.TableName == ActionPermission.TableName.ToLower())
                 ?.UserAuthArr?.Contains(ActionPermission.TableAction) ?? false;
 

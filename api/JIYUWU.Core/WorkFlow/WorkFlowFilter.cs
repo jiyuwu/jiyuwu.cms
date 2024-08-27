@@ -10,104 +10,82 @@ namespace JIYUWU.Core.WorkFlow
         {
             try
             {
-                if (where != null)
+                if (where is Func<T, bool> predicate)
                 {
-                    return entities.Any(((Func<T, bool>)where));
+                    return entities.Any(predicate);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"流程表达式解析异常:" + ex.Message + ex.InnerException);
+                Console.WriteLine($"流程表达式解析异常: {ex.Message} {ex.InnerException}");
+
                 if (filters != null)
                 {
-                    Func<T, bool> expression = filters.Create<T>().Compile();
+                    var expression = filters.Create<T>().Compile();
                     return entities.Any(expression);
                 }
             }
             return false;
         }
+
         public static Expression<Func<T, bool>> Create<T>(this List<FieldFilter> filters) where T : class
         {
-            if (filters == null)
+            if (filters == null || !filters.Any(f => !string.IsNullOrEmpty(f.Field) && !string.IsNullOrEmpty(f.Value)))
             {
-                return null;
+                return x => true;
             }
-            filters = filters.Where(x => !string.IsNullOrEmpty(x.Field)).ToList();
-            if (!filters.Any(x => !string.IsNullOrEmpty(x.Value)))
+
+            var fields = typeof(T).GetProperties().Select(s => s.Name).ToHashSet();
+            Expression<Func<T, bool>> andExpression = x => true;
+            Expression<Func<T, bool>> orExpression = null;
+
+            foreach (var filter in filters.Where(f => !string.IsNullOrEmpty(f.Field) && !string.IsNullOrEmpty(f.Value)))
             {
-                return null;
-            }
-            List<string> fields = typeof(T).GetProperties().Select(s => s.Name).ToList();
-            Expression<Func<T, bool>> orFilter = null;
-            Expression<Func<T, bool>> expression = x => true;
-            foreach (var filter in filters)
-            {
-                if (string.IsNullOrEmpty(filter.Value))
-                {
-                    continue;
-                }
                 if (!fields.Contains(filter.Field))
                 {
-                    string msg = $"表【{typeof(T).GetEntityTableName(false)}】不存在字段【{filter.Field}】";
+                    var msg = $"表【{typeof(T).GetEntityTableName(false)}】不存在字段【{filter.Field}】";
                     Console.WriteLine(msg);
                     throw new Exception(msg);
                 }
+
                 filter.Value = filter.Value.Trim();
-                LinqExpressionType type = LinqExpressionType.Equal;
-                switch (filter.FilterType)
+                LinqExpressionType expressionType = GetExpressionType(filter.FilterType);
+
+                if (expressionType == LinqExpressionType.In)
                 {
-                    case "!=":
-                        type = LinqExpressionType.NotEqual;
-                        break;
-                    case ">":
-                        type = LinqExpressionType.GreaterThan;
-                        break;
-                    case ">=":
-                        type = LinqExpressionType.ThanOrEqual;
-                        break;
-                    case "小于":
-                    case "<":
-                        type = LinqExpressionType.LessThan;
-                        break;
-                    case "<=":
-                        type = LinqExpressionType.LessThanOrEqual;
-                        break;
-                    case "in":
-                        type = LinqExpressionType.In;
-                        break;
-                    case "like":
-                        type = LinqExpressionType.Like;
-                        break;
-                    default:
-                        break;
-                }
-                if (type == LinqExpressionType.In)
-                {
-                    var values = filter.Value.Split(",").Where(x => !string.IsNullOrEmpty(x)).ToList();
-                    if (values.Count > 0)
+                    var values = filter.Value.Split(',').Where(v => !string.IsNullOrEmpty(v)).ToList();
+                    if (values.Any())
                     {
-                        expression = expression.And(filter.Field.CreateExpression<T>(values, type));
+                        andExpression = andExpression.And(filter.Field.CreateExpression<T>(values, expressionType));
                     }
                 }
                 else if (filter.FilterType == "or")
                 {
-                    if (orFilter == null)
-                    {
-                        orFilter = x => false;
-                    }
-                    orFilter = orFilter.Or(filter.Field.CreateExpression<T>(filter.Value, LinqExpressionType.Equal));
+                    orExpression ??= x => false;
+                    orExpression = orExpression.Or(filter.Field.CreateExpression<T>(filter.Value, LinqExpressionType.Equal));
                 }
                 else
                 {
-                    expression = expression.And(filter.Field.CreateExpression<T>(filter.Value, type));
+                    andExpression = andExpression.And(filter.Field.CreateExpression<T>(filter.Value, expressionType));
                 }
             }
-            if (orFilter != null)
-            {
-                expression = expression.And(orFilter);
-            }
-            return expression;
 
+            return orExpression != null ? andExpression.And(orExpression) : andExpression;
+        }
+
+        private static LinqExpressionType GetExpressionType(string filterType)
+        {
+            return filterType switch
+            {
+                "!=" => LinqExpressionType.NotEqual,
+                ">" => LinqExpressionType.GreaterThan,
+                ">=" => LinqExpressionType.ThanOrEqual,
+                "小于" or "<" => LinqExpressionType.LessThan,
+                "<=" => LinqExpressionType.LessThanOrEqual,
+                "in" => LinqExpressionType.In,
+                "like" => LinqExpressionType.Like,
+                _ => LinqExpressionType.Equal
+            };
         }
     }
 }

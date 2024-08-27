@@ -21,8 +21,6 @@ namespace JIYUWU.Core.Common
             string exp = $"{new DateTimeOffset(DateTime.Now.AddMinutes(expir ?? (UserContext.MenuType == 1 ? 43200 : AppSetting.ExpMinutes))).ToUnixTimeSeconds()}";
             var claims = new List<Claim>
                 {
-                //new Claim(ClaimTypes.Name,userInfo.UserName ),
-                //new Claim(ClaimTypes.Role,userInfo.Role_Id ),
                 new Claim(JwtRegisteredClaimNames.Jti,userInfo.User_Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, $"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}"),
                 new Claim(JwtRegisteredClaimNames.Nbf,$"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}") ,

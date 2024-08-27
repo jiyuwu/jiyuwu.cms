@@ -18,7 +18,7 @@ namespace JIYUWU.Core.Common
     public class EPPlusHelper
     {
         /// <summary>
-        /// 导入模板(仅限框架导出模板使用)(202.05.07)
+        /// 导入模板(仅限框架导出模板使用)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
@@ -43,8 +43,7 @@ namespace JIYUWU.Core.Common
                 if (package.Workbook.Worksheets.Count == 0 ||
                     package.Workbook.Worksheets.FirstOrDefault().Dimension.End.Row <= 1)
                     return responseContent.Error("No data");
-                //2020.08.11修复获取表结构信息时，表为别名时查不到数据的问题
-                //typeof(T).GetEntityTableName()
+                //解决获取表结构信息时，表为别名时查不到数据的问题
                 List<CellOptions> cellOptions = GetExportColumnInfo(typeof(T).Name, false, false, columns: exportColumns?.GetExpressionToArray());
                 //设置忽略的列
                 if (exportColumns != null)
@@ -108,7 +107,7 @@ namespace JIYUWU.Core.Common
                     {
 
                         string value = sheet.Cells[m, j].Value?.ToString();
-                        //2022.06.20增加原生excel读取方法
+                        //原生excel读取方法
                         if (readValue != null)
                         {
                             value = readValue(value, sheet, sheet.Cells[m, j], m, j);
@@ -116,7 +115,6 @@ namespace JIYUWU.Core.Common
 
                         CellOptions options = cellOptions.Where(x => x.Index == j).FirstOrDefault();
                         PropertyInfo property = propertyInfos.Where(x => x.Name == options.ColumnName).FirstOrDefault();
-                        //2021.06.04优化判断
                         if (string.IsNullOrEmpty(value))
                         {
                             if (options.Requierd)
@@ -128,7 +126,7 @@ namespace JIYUWU.Core.Common
 
 
                         //验证字典数据
-                        //2020.09.20增加判断数据源是否有值
+                        //判断数据源是否有值
                         if (!string.IsNullOrEmpty(options.DropNo) && !string.IsNullOrEmpty(value))
                         {
                             if (options.KeyValues == null)
@@ -136,7 +134,7 @@ namespace JIYUWU.Core.Common
                                 return responseContent.Error("[{$ts}]数据字典缺失".TranslatorFormat(options.ColumnCNName), false);
                             }
                             string key = null;
-                            //2022.11.21增加导入多选的支持
+                            //导入多选的支持
                             if ((options.EditType == "selectList" || options.EditType == "checkbox") && !string.IsNullOrEmpty(value))
                             {
                                 var cellValues = value.Replace("，", ",").Split(",").Where(x => !string.IsNullOrEmpty(x)).ToArray();
@@ -165,7 +163,7 @@ namespace JIYUWU.Core.Common
                         }
                         else if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(DateTime?))
                         {
-                            //2021.06.04增加日期格式处理
+                            //日期格式处理
                             if (value.Length == 5 && int.TryParse(value, out int days))
                             {
                                 property.SetValue(entity, new DateTime(1900, 1, 1).AddDays(days - 2));
@@ -274,7 +272,7 @@ namespace JIYUWU.Core.Common
         }
 
         /// <summary>
-        /// 下载导出模板(仅限框架导出模板使用)(202.05.07)
+        /// 下载导出模板(仅限框架导出模板使用)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="exportColumns">指定导出的列</param>
@@ -288,7 +286,7 @@ namespace JIYUWU.Core.Common
             return Export<T>(null, exportColumns?.GetExpressionToArray(), ignoreColumns, savePath, fileName, true, headerMap);
         }
         /// <summary>
-        /// 下载导出模板(仅限框架导出模板使用)(202.05.07)
+        /// 下载导出模板(仅限框架导出模板使用)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="ignoreColumns">忽略不导出的列</param>
@@ -302,7 +300,6 @@ namespace JIYUWU.Core.Common
 
         /// <summary>
         /// 导出excel文件(导入功能里的导出模板也使用的此功能，list传的null，导出的文件只有模板的标题)
-        /// (202.05.07)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
@@ -319,7 +316,6 @@ namespace JIYUWU.Core.Common
 
         /// <summary>
         /// 导出excel文件(导入功能里的导出模板也使用的此功能，list传的null，导出的文件只有模板的标题)
-        /// (202.05.07)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list">导出的对象</param>
@@ -335,14 +331,14 @@ namespace JIYUWU.Core.Common
 
             //获取代码生成器对应的配置信息
             //  List<CellOptions> cellOptions = GetExportColumnInfo(typeof(T).GetEntityTableName(), template);
-            //2020.06.02修复使用表别名时读取不到配置信息
+            //解决使用表别名时读取不到配置信息
             List<CellOptions> cellOptions = GetExportColumnInfo(typeof(T).Name, template, columns: exportColumns?.ToArray());
             string fullPath = savePath + fileName;
             //获取所有有值的数据源
             var dicNoKeys = cellOptions
                  .Where(x => !string.IsNullOrEmpty(x.DropNo) && x.KeyValues != null && x.KeyValues.Keys.Count > 0)
                  .Select(x => new { x.DropNo, x.ColumnName, x.SearchType, x.EditType }).Distinct().ToList();
-            //2021.01.24修复多选类型，导出excel文件没有转换数据源的问题
+            //多选类型
             var selectList = dicNoKeys.Where(x => x.SearchType == "checkbox" || x.SearchType == "selectList" || x.EditType == "checkbox" || x.EditType == "selectList")
                   .Select(s => s.ColumnName).ToArray();
 
@@ -350,7 +346,7 @@ namespace JIYUWU.Core.Common
 
             /*导出时，代码生成器中的表配置信息Sys_TableInfo/Sys_TableColumn必须与当前数据库相同，否则导出来可能没有数据*/
 
-            //2020.06.02优化读取导出列配置信息
+            //读取导出列配置信息
             //导出指定的列
             //如果指定了导出的标题列，忽略的标题列不再起作用
             if (exportColumns != null && exportColumns.Count() > 0)
@@ -365,11 +361,6 @@ namespace JIYUWU.Core.Common
                         propertyInfo.Add(property);
                     }
                 }
-                //propertyInfo =
-                //   typeof(T).GetProperties()
-                //  .Where(x => exportColumns.Select(g => g.ToLower()).Contains(x.Name.ToLower())).ToList();
-                ////.Where(x => cellOptions.Select(s => s.ColumnName) //获取代码生成器配置的列
-                ////.Contains(x.Name)).ToList();
             }
             else if (ignoreColumns != null && ignoreColumns.Count() > 0)
             {
@@ -447,7 +438,7 @@ namespace JIYUWU.Core.Common
                     package.SaveAs(new FileInfo(fullPath));
                     return fullPath;
                 }
-                //2021.01.24修复多选类型，导出excel文件没有转换数据源的问题
+                //多选类型
                 IEnumerable<string> GetListValues(string cellValues, string propertyName)
                 {
                     var values = cellValues.Split(",");
@@ -477,7 +468,7 @@ namespace JIYUWU.Core.Common
                         }
                         if (cellValue != null && dicNoKeys.Exists(x => x.ColumnName == propertyInfo[j].Name))
                         {
-                            //2021.01.24修复多选类型，导出excel文件没有转换数据源的问题
+                            //多选类型
                             if (selectList.Contains(propertyInfo[j].Name))
                             {
                                 cellValue = string.Join(",", GetListValues(cellValue.ToString(), propertyInfo[j].Name));
@@ -518,61 +509,6 @@ namespace JIYUWU.Core.Common
         /// <returns></returns>
         private static List<CellOptions> GetExportColumnInfo(string tableName, bool temlate = false, bool filterKeyValue = true, string[] columns = null)
         {
-            //&& x.IsDisplay == 1&&x.IsReadDataset==0只导出代码生器中设置为显示并且不是只读的列，可根据具体业务设置导出列
-            // && x.IsReadDataset == 0
-            //2020.06.02增加不区分大表名大小写: 原因mysql可能是表名是小写，但生成model的时候强制大写
-            //x => x.TableName.ToLower() == tableName.ToLower()
-            //var query = DBServerProvider.DbContext.Set<Sys_TableColumn>().Where(x => x.TableName.ToLower() == tableName.ToLower());
-            //if (columns != null && columns.Length > 0)
-            //{
-            //    query = query.Where(x => columns.Contains(x.ColumnName));
-            //}
-            //else
-            //{
-            //    query = query.Where(x => x.IsDisplay == 1);
-            //}
-            //List<CellOptions> cellOptions = query.OrderByDescending(x => x.OrderNo).Select(c => new CellOptions()
-            //{
-            //    ColumnName = c.ColumnName,
-            //    ColumnCNName = c.ColumnCnName,
-            //    DropNo = c.DropNo,
-            //    Requierd = c.IsNull > 0 ? false : true,
-            //    ColumnWidth = c.ColumnWidth ?? 90,
-            //    EditType = c.EditType,
-            //    SearchType = c.SearchType
-
-            //}).ToList();
-
-
-            //if (temlate) return cellOptions;
-
-            //var dicNos = cellOptions.Where(x => !string.IsNullOrEmpty(x.DropNo)).Select(c => c.DropNo);
-
-            //if (dicNos.Count() == 0) return cellOptions;
-
-            //var dictionaries = DictionaryManager.GetDictionaries(dicNos);
-            ////获取绑定字典数据源下拉框的值
-            //foreach (string dicNo in dicNos.Distinct())
-            //{
-            //    Dictionary<string, string> keyValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            //    List<Sys_DictionaryList> dictionaryLists = dictionaries
-            //       .Where(x => x.DicNo == dicNo && x.Sys_DictionaryList != null)
-            //       .Select(s => s.Sys_DictionaryList).FirstOrDefault();
-            //    if (dictionaryLists == null || dictionaryLists.Count == 0) continue;
-            //    foreach (var item in dictionaryLists)
-            //    {
-            //        ////filterKeyValue为true过滤keyvalue相不的项,key==value相同的则不处理
-            //        if (filterKeyValue && item.DicName == item.DicValue) continue;
-            //        if (keyValues.ContainsKey(item.DicValue)) continue;
-            //        keyValues.Add(item.DicValue, item.DicName);
-            //    }
-
-            //    foreach (CellOptions options in cellOptions.Where(x => x.DropNo == dicNo))
-            //    {
-            //        options.KeyValues = keyValues;
-            //    }
-            //}
-            //return cellOptions;
             return new List<CellOptions>();
         }
 
@@ -587,7 +523,7 @@ namespace JIYUWU.Core.Common
         }
 
         /// <summary>
-        /// 2021.01.10增加通过excel导出功能
+        /// 通过excel导出功能
         /// </summary>
         /// <param name="rows"></param>
         /// <param name="fileName"></param>
@@ -617,7 +553,6 @@ namespace JIYUWU.Core.Common
 
                     int i = 0;
                     worksheet.Cells[1 + i, j + 1].Value = cellValue;
-                    //worksheet.Column(j + 1).Width = 11;
                     worksheet.Row(i + 1).Height = 20;//设置行高
                     var style = worksheet.Cells[i + 1, j + 1].Style;
                     style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -688,7 +623,5 @@ namespace JIYUWU.Core.Common
         public string SearchType { get; set; }
         //对应字典项维护的Key,Value
         public Dictionary<string, string> KeyValues { get; set; }
-        //public string Value { get; set; } //对应字典项维护的Value
-        //public string Name { get; set; } //对应字典项显示的名称
     }
 }
