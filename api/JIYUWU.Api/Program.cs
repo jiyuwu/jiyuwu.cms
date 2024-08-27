@@ -1,10 +1,6 @@
 using Autofac;
 using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
-using JIYUWU.Core.Common;
-using JIYUWU.Core.DbSqlSugar;
-using JIYUWU.Core.Extension;
-using JIYUWU.Core.ObjectActionValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -38,19 +34,19 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader().AllowAnyMethod();
             });
 });
-builder.Services.UseMethodsModelParameters().UseMethodsGeneralParameters();
+//builder.Services.UseMethodsModelParameters().UseMethodsGeneralParameters();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddControllers();
-//初始化配置文件
-AppSetting.Init(builder.Services, configuration);
-// 调用 ConfigureContainer 方法，注册 Autofac 容器中的自定义模块
-builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
-{
-    // Assuming `Services.AddModule` is an extension method for registering modules
-    builder.Services.AddModule(containerBuilder, configuration);
-});
-builder.Services.UseSqlSugar();
+////初始化配置文件
+//AppSetting.Init(builder.Services, configuration);
+//// 调用 ConfigureContainer 方法，注册 Autofac 容器中的自定义模块
+//builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+//{
+//    // Assuming `Services.AddModule` is an extension method for registering modules
+//    builder.Services.AddModule(containerBuilder, configuration);
+//});
+//builder.Services.UseSqlSugar();
 
 var app = builder.Build();
 
