@@ -131,7 +131,7 @@ namespace JIYUWU.Core.Filter
 
 
         /// <summary>
-        /// 自定义上传文件夹(2022.10.07)
+        /// 自定义上传文件夹
         /// </summary>
         protected string UploadFolder = null;
 
