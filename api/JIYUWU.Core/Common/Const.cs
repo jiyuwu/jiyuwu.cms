@@ -66,6 +66,14 @@ namespace JIYUWU.Core.Common
     {
         public static string Name { get; set; }
     }
+    public class ApplicationContentType
+    {
+        public const string FORM = "application/x-www-form-urlencoded; charset=utf-8";
+        public const string STREAM = "application/octet-stream; charset=utf-8";
+        public const string JSON = "application/json; charset=utf-8";
+        public const string XML = "application/xml; charset=utf-8";
+        public const string TEXT = "application/text; charset=utf-8";
+    }
     public struct SqlDbTypeName
     {
         public const string NVarChar = "nvarchar";
@@ -91,6 +99,30 @@ namespace JIYUWU.Core.Common
 
 
     #region 枚举类型
+    public enum ResponseType
+    {
+        ServerError = 1,
+        LoginExpiration = 302,
+        ParametersLack = 303,
+        TokenExpiration,
+        PINError,
+        NoPermissions,
+        NoRolePermissions,
+        LoginError,
+        AccountLocked,
+        LoginSuccess,
+        SaveSuccess,
+        AuditSuccess,
+        OperSuccess,
+        RegisterSuccess,
+        ModifyPwdSuccess,
+        EidtSuccess,
+        DelSuccess,
+        NoKey,
+        NoKeyDel,
+        KeyError,
+        Other
+    }
     public enum LinqExpressionType
     {
         Equal = 0,//=
@@ -170,6 +202,11 @@ namespace JIYUWU.Core.Common
         Android = 1,
         Windows = 2,
         Linux
+    }
+    public enum QueryOrderBy
+    {
+        Desc = 1,
+        Asc = 2
     }
     #endregion
 }

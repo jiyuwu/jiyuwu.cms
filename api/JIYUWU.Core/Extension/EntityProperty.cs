@@ -1,9 +1,12 @@
 ﻿using JIYUWU.Core.Common;
+using JIYUWU.Core.UserManager;
+using JIYUWU.Entity.Base;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -68,6 +71,149 @@ namespace JIYUWU.Core.Extension
             object[] obj = member.GetCustomAttributes(type, false);
             if (obj.Length == 0) return null;
             return obj[0];
+        }
+        public static ISugarQueryable<T> WhereNotEmpty<T>(this ISugarQueryable<T> queryable, [NotNull] Expression<Func<T, object>> field, string value, LinqExpressionType linqExpression = LinqExpressionType.Equal)
+        {
+            if (string.IsNullOrEmpty(value)) return queryable;
+            return queryable.Where(field.GetExpressionPropertyFirst<T>().CreateExpression<T>(value, linqExpression));
+        }
+        public static string GetExpressionPropertyFirst<TEntity>(this Expression<Func<TEntity, object>> properties)
+        {
+            string[] arr = properties.GetExpressionProperty();
+            if (arr.Length > 0)
+                return arr[0];
+            return "";
+        }
+        public static TSource SetCreateDefaultVal<TSource>(this TSource source, UserInfo userInfo = null)
+        {
+            return SetDefaultVal(source, AppSetting.CreateMember, userInfo);
+        }
+        public static TSource SetModifyDefaultVal<TSource>(this TSource source, UserInfo userInfo = null)
+        {
+            return SetDefaultVal(source, AppSetting.ModifyMember, userInfo);
+        }
+        /// <summary>
+        /// 
+        /// 设置默认字段的值如:"CreateID", "Creator", "CreateDate"，"ModifyID", "Modifier", "ModifyDate"
+        /// </summary>
+        /// <param name="saveDataModel"></param>
+        /// <param name="setType">true=新增设置"CreateID", "Creator", "CreateDate"值
+        /// false=编辑设置"ModifyID", "Modifier", "ModifyDate"值
+        /// </param>
+        private static TSource SetDefaultVal<TSource>(this TSource source, TableDefaultColumns defaultColumns, UserInfo userInfo = null)
+        {
+            userInfo = userInfo ?? UserContext.Current.UserInfo;
+            foreach (PropertyInfo property in typeof(TSource).GetProperties())
+            {
+                string filed = property.Name.ToLower();
+                if (filed == defaultColumns.UserIdField?.ToLower())
+                    property.SetValue(source, userInfo.User_Id);
+
+                if (filed == defaultColumns.UserNameField?.ToLower())
+                    property.SetValue(source, userInfo.UserTrueName);
+
+                if (filed == defaultColumns.DateField?.ToLower())
+                    property.SetValue(source, DateTime.Now);
+            }
+            return source;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="propertyName">字段名</param>
+        /// <param name="propertyValue">表达式的值</param>
+        /// <param name="expressionType">创建表达式的类型,如:p=>p.propertyName != propertyValue 
+        /// p=>p.propertyName.Contains(propertyValue)</param>
+        /// <returns></returns>
+        private static Expression<Func<T, bool>> CreateExpression<T>(
+          this string propertyName,
+          object propertyValue,
+          ParameterExpression parameter,
+          LinqExpressionType expressionType)
+        {
+            Type proType = typeof(T).GetProperty(propertyName).PropertyType;
+            //创建节点变量如p=>的节点p
+            //  parameter ??= Expression.Parameter(typeof(T), "p");//创建参数p
+            parameter = parameter ?? Expression.Parameter(typeof(T), "p");
+
+            //创建节点的属性p=>p.name 属性name
+            MemberExpression memberProperty = Expression.PropertyOrField(parameter, propertyName);
+            if (expressionType == LinqExpressionType.In)
+            {
+                if (!(propertyValue is System.Collections.IList list) || list.Count == 0) return x => false;
+
+                var res = typeof(LambdaExt).GetMethod("GetContainsExpression", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
+                           .MakeGenericMethod(new Type[] { typeof(T), proType })
+                           .Invoke(null, new object[] { propertyName, propertyValue, parameter }) as Expression<Func<T, bool>>;
+                return res;
+            }
+
+            //  object value = propertyValue;
+            ConstantExpression constant = proType.ToString() == "System.String"
+                ? Expression.Constant(propertyValue) : Expression.Constant(propertyValue.ToString().ChangeType(proType));
+
+            // DateTime只选择了日期的时候自动在结束日期加一天，修复DateTime类型使用日期区间查询无法查询到结束日期的问题
+            if ((proType == typeof(DateTime) || proType == typeof(DateTime?)) && expressionType == LinqExpressionType.LessThanOrEqual && propertyValue.ToString().Length == 10)
+            {
+                expressionType = LinqExpressionType.LessThan;
+                constant = Expression.Constant(Convert.ToDateTime(propertyValue.ToString()).AddDays(1));
+            }
+
+            UnaryExpression member = Expression.Convert(memberProperty, constant.Type);
+            Expression<Func<T, bool>> expression;
+            switch (expressionType)
+            {
+                //p=>p.propertyName != propertyValue
+                case LinqExpressionType.NotEqual:
+                    expression = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(member, constant), parameter);
+                    break;
+                //   p => p.propertyName > propertyValue
+                case LinqExpressionType.GreaterThan:
+                    expression = Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(member, constant), parameter);
+                    break;
+                //   p => p.propertyName < propertyValue
+                case LinqExpressionType.LessThan:
+                    expression = Expression.Lambda<Func<T, bool>>(Expression.LessThan(member, constant), parameter);
+                    break;
+                // p => p.propertyName >= propertyValue
+                case LinqExpressionType.ThanOrEqual:
+                    expression = Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(member, constant), parameter);
+                    break;
+                // p => p.propertyName <= propertyValue
+                case LinqExpressionType.LessThanOrEqual:
+                    expression = Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(member, constant), parameter);
+                    break;
+                //   p => p.propertyName.Contains(propertyValue)
+                // p => !p.propertyName.Contains(propertyValue)
+                case LinqExpressionType.Like:
+                case LinqExpressionType.NotLike:
+                case LinqExpressionType.Contains:
+                case LinqExpressionType.NotContains:
+                    MethodInfo method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                    constant = Expression.Constant(propertyValue, typeof(string));
+                    if (expressionType == LinqExpressionType.Like || expressionType == LinqExpressionType.Contains)
+                    {
+                        expression = Expression.Lambda<Func<T, bool>>(Expression.Call(member, method, constant), parameter);
+                    }
+                    else
+                    {
+                        expression = Expression.Lambda<Func<T, bool>>(Expression.Not(Expression.Call(member, method, constant)), parameter);
+                    }
+                    break;
+                case LinqExpressionType.LikeStart:
+                case LinqExpressionType.LikeEnd:
+                    string m = expressionType == LinqExpressionType.LikeStart ? "StartsWith" : "EndsWith";
+                    var startsWithMethod = typeof(string).GetMethod(m, new[] { typeof(string) });
+                    var searchTermConstant = Expression.Constant(propertyValue, typeof(string));
+                    var startsWithCall = Expression.Call(member, startsWithMethod, searchTermConstant);
+                    expression = Expression.Lambda<Func<T, bool>>(startsWithCall, parameter);
+                    break;
+                default:
+                    expression = Expression.Lambda<Func<T, bool>>(Expression.Equal(member, constant), parameter);
+                    break;
+            }
+            return expression;
         }
         /// <summary>
         /// 获取对象里指定成员名称
