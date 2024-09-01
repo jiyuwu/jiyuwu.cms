@@ -21,6 +21,8 @@
 		    });
 		},
 		onLoad() {
+			console.log("Page is loading...");
+			this.$commonMethods.translate("home");
 			const tabNames = ['home', 'my']; 
 			tabNames.forEach((name, index) => {
 			        uni.setTabBarItem({
