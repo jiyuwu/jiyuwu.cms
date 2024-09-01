@@ -14,17 +14,17 @@ namespace JIYUWU.Entity.Base
         [SugarColumn(IsPrimaryKey = true)]
         [Key]
         [Display(Name = "DbServiceId")]
-        [Column(TypeName = "uniqueidentifier")]
+        [Column(TypeName = "nvarchar(50)")]
         [Editable(true)]
         [Required(AllowEmptyStrings = false)]
-        public Guid DbServiceId { get; set; }
+        public string DbServiceId { get; set; }
 
         /// <summary>
         ///租户名称
         /// </summary>
         [Display(Name = "租户名称")]
-        [MaxLength(200)]
-        [Column(TypeName = "nvarchar(200)")]
+        [MaxLength(20)]
+        [Column(TypeName = "nvarchar(20)")]
         [Editable(true)]
         [Required(AllowEmptyStrings = false)]
         public string DbServiceName { get; set; }
@@ -33,9 +33,9 @@ namespace JIYUWU.Entity.Base
         ///所属集团
         /// </summary>
         [Display(Name = "所属集团")]
-        [Column(TypeName = "uniqueidentifier")]
+        [Column(TypeName = "nvarchar(50)")]
         [Editable(true)]
-        public Guid? GroupId { get; set; }
+        public string GroupId { get; set; }
 
         /// <summary>
         /// 数据库IP
@@ -113,10 +113,10 @@ namespace JIYUWU.Entity.Base
         /// <summary>
         ///
         /// </summary>
-        [Display(Name = "CreateID")]
+        [Display(Name = "CreateId")]
         [Column(TypeName = "int")]
         [Editable(true)]
-        public int? CreateID { get; set; }
+        public int? CreateId { get; set; }
 
         /// <summary>
         ///创建人
@@ -138,10 +138,10 @@ namespace JIYUWU.Entity.Base
         /// <summary>
         ///
         /// </summary>
-        [Display(Name = "ModifyID")]
+        [Display(Name = "ModifyId")]
         [Column(TypeName = "int")]
         [Editable(true)]
-        public int? ModifyID { get; set; }
+        public int? ModifyId { get; set; }
 
         /// <summary>
         ///修改人

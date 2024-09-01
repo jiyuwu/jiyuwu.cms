@@ -40,7 +40,6 @@ namespace JIYUWU.Core.Common
         {
             get { return _connection.UseSqlServer2008; }
         }
-        public static Secret Secret { get; private set; }
         public static CreateMember CreateMember { get; private set; }
 
         public static ModifyMember ModifyMember { get; private set; }
@@ -55,7 +54,7 @@ namespace JIYUWU.Core.Common
         public static GlobalFilter GlobalFilter { get; set; }
 
         /// <summary>
-        /// JWT有效期(分钟=默认120)
+        /// Token有效期(分钟=默认120)
         /// </summary>
         public static int ExpMinutes { get; private set; } = 120;
         public static string FullStaticPath { get; private set; } = null;
@@ -81,15 +80,12 @@ namespace JIYUWU.Core.Common
         public static void Init(IServiceCollection services, IConfiguration configuration)
         {
             Configuration = configuration;
-            services.Configure<Secret>(configuration.GetSection("Secret"));
             services.Configure<Connection>(configuration.GetSection("ConnectionStrs"));
             services.Configure<GlobalFilter>(configuration.GetSection("GlobalFilter"));
 
             var provider = services.BuildServiceProvider();
             IWebHostEnvironment environment = provider.GetRequiredService<IWebHostEnvironment>();
             CurrentPath = Path.Combine(environment.ContentRootPath, "").ReplacePath();
-
-            Secret = provider.GetRequiredService<IOptions<Secret>>().Value;
 
             //设置修改或删除时需要设置为默认用户信息的字段
             CreateMember = provider.GetRequiredService<IOptions<CreateMember>>().Value ?? new CreateMember();
@@ -136,21 +132,6 @@ namespace JIYUWU.Core.Common
             DBType.Name = _connection.DBType;
             if (string.IsNullOrEmpty(_connection.DbConnectionStr))
                 throw new System.Exception("未配置好数据库默认连接");
-
-            try
-            {
-                _connection.DbConnectionStr = _connection.DbConnectionStr.DecryptDES(Secret.DB);
-            }
-            catch { }
-
-            if (!string.IsNullOrEmpty(_connection.RedisConnectionStr))
-            {
-                try
-                {
-                    _connection.RedisConnectionStr = _connection.RedisConnectionStr.DecryptDES(Secret.Redis);
-                }
-                catch { }
-            }
 
         }
         // 多个节点name格式 ：["key:key1"]

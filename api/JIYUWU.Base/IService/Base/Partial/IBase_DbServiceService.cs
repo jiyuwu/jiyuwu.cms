@@ -4,6 +4,6 @@ namespace JIYUWU.Base.IService
 {
     public partial interface IBase_DbServiceService
     {
-        WebResponseContent CreateDb(Guid id);
+        WebResponseContent CreateDb(string id);
     }
 }

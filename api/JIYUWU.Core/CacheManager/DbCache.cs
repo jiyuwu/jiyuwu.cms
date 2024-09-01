@@ -104,7 +104,7 @@ namespace JIYUWU.Core.CacheManager
         }
 
 
-        public static Base_DbService GetDbInfo(Guid dbServiceId)
+        public static Base_DbService GetDbInfo(string dbServiceId)
         {
             return DbServices.Where(x => x.DbServiceId == dbServiceId).FirstOrDefault();
         }

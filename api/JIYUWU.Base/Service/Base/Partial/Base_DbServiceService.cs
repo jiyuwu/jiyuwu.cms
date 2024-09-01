@@ -28,7 +28,7 @@ namespace JIYUWU.Base.Service
 
     WebResponseContent webResponse = new WebResponseContent();
 
-    public WebResponseContent CreateDb(Guid id)
+    public WebResponseContent CreateDb(string id)
     {
         var item = DbCache.GetDbInfo(id);
         try
