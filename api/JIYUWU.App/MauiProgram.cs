@@ -18,8 +18,6 @@ namespace JIYUWU.App
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
-            // 注册 LocalizationService
-            builder.Services.AddSingleton<LocalizationService>();
             // 注册 MainPageViewModel
             builder.Services.AddTransient<ViewModel.MainPageViewModel>();
 
