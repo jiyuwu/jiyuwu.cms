@@ -1,24 +1,25 @@
-﻿namespace JIYUWU.App
+﻿using JIYUWU.App.ViewModel;
+
+namespace JIYUWU.App
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
-        public MainPage()
+        private readonly LocalizationService _localizationService;
+        public MainPage(MainPageViewModel viewModel, LocalizationService localizationService)
         {
             InitializeComponent();
+            BindingContext = viewModel;
+            _localizationService = localizationService;
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        private void OnSwitchToEnglishClicked(object sender, EventArgs e)
         {
-            count++;
+            _localizationService.LoadLanguage("en");
+        }
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"My Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+        private void OnSwitchToChineseClicked(object sender, EventArgs e)
+        {
+            _localizationService.LoadLanguage("zh");
         }
     }
 
