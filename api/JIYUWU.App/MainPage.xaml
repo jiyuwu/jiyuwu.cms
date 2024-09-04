@@ -6,7 +6,8 @@
              x:Class="JIYUWU.App.MainPage">
     <StackLayout Padding="30">
         <Label Text="{translates:TranslateHelper Key=Title}" FontSize="24" HorizontalOptions="Center" />
-        <Label Text="{x:Static strings:AppResources.Hello}" FontSize="24" HorizontalOptions="Center" Margin="0,20,0,0" />
+        <Label Text="{translates:TranslateHelper Key=Hello}" FontSize="24" HorizontalOptions="Center" />
+        <!--<Label Text="{x:Static strings:AppResources.Hello}" FontSize="24" HorizontalOptions="Center" Margin="0,20,0,0" />-->
 
         <Button Text="Switch to English" Clicked="OnSwitchToEnglishClicked" Margin="0,20,0,0"/>
         <Button Text="切换到中文" Clicked="OnSwitchToChineseClicked"/>

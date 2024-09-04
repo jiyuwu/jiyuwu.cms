@@ -1,6 +1,7 @@
 ﻿using JIYUWU.App.Resources.Strings;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -22,13 +23,40 @@ namespace JIYUWU.App.Common
             return binding;
         }
     }
-    public class Translator
+    public class Translator : INotifyPropertyChanged
     {
-        public  string this [string key]
+        private CultureInfo _cultureInfo;
+
+        public string this[string key]
         {
-            get=>AppResources.ResourceManager.GetString(key, Cultureinfo);
+            get => AppResources.ResourceManager.GetString(key, _cultureInfo);
         }
-        public CultureInfo Cultureinfo { get; set; }
+
+        public CultureInfo Cultureinfo
+        {
+            get => _cultureInfo;
+            set
+            {
+                if (_cultureInfo != value)
+                {
+                    _cultureInfo = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public static Translator Instance { get; } = new Translator();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+        }
+
+        public Translator()
+        {
+            _cultureInfo = new CultureInfo(""); // 默认语言
+        }
     }
 }
