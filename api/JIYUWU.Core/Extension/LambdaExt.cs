@@ -43,7 +43,37 @@ namespace JIYUWU.Core.Extension
                   .Skip((page - 1) * size)
                  .Take(size);
         }
+        /// <summary>
+        /// 解析多字段排序
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="queryable"></param>
+        /// <param name="orderBySelector">string=排序的字段,bool=true降序/false升序</param>
+        /// <returns></returns>
+        public static ISugarQueryable<TEntity> GetIQueryableOrderBy<TEntity>(this ISugarQueryable<TEntity> queryable, Dictionary<string, QueryOrderBy> orderBySelector)
+        {
+            string[] orderByKeys = orderBySelector.Select(x => x.Key).ToArray();
+            if (orderByKeys == null || orderByKeys.Length == 0) return queryable;
 
+            ISugarQueryable<TEntity> queryableOrderBy = queryable;
+            string orderByKey = orderByKeys[0];
+
+            // 判断升序或降序，并应用第一个排序字段
+            queryableOrderBy = orderBySelector[orderByKey] == QueryOrderBy.Desc
+                ? queryableOrderBy.OrderBy($"{orderByKey} desc")
+                : queryableOrderBy.OrderBy(orderByKey);
+
+            // 处理剩余的排序字段
+            for (int i = 1; i < orderByKeys.Length; i++)
+            {
+                string currentOrderByKey = orderByKeys[i];
+                queryableOrderBy = orderBySelector[currentOrderByKey] == QueryOrderBy.Desc
+                    ? queryableOrderBy.OrderBy($"{currentOrderByKey} desc")
+                    : queryableOrderBy.OrderBy(currentOrderByKey);
+            }
+
+            return queryableOrderBy;
+        }
 
         public static IEnumerable<T> TakePage<T>(this List<T> list, int page, int size = 15)
         {
