@@ -13,12 +13,14 @@ namespace JIYUWU.Api.Controllers.Base
     public class Base_DbController : ApiBaseController<IBase_DbServiceService>
     {
         private IBase_DbServiceRepository _Repository;
+        private IBase_DbServiceService _Service;
         [ActivatorUtilitiesConstructor]
         public Base_DbController(IBase_DbServiceService service,
                            IBase_DbServiceRepository Repository)
        : base(service)
         {
             _Repository = Repository;
+            _Service=service;
         }
         [HttpGet, Route("getVierificationCode"), AllowAnonymous]
         public IActionResult GetVierificationCode()
@@ -32,6 +34,17 @@ namespace JIYUWU.Api.Controllers.Base
             var list=_Repository.SqlSugarClient.Queryable<Base_DbService>().ToList();
             HttpContext.GetService<IMemoryCache>().Set(data.uuid.ToString(), code, new TimeSpan(0, 5, 0));
             return Json(data);
+        }
+        [HttpPost, Route("AddDB"), AllowAnonymous]
+        public IActionResult Add()
+        {
+            Base_DbService service = new Base_DbService();
+            service.DbServiceName = "test";
+            service.DbServiceId=Guid.NewGuid().ToString();
+            service.PhoneNo = "test";
+            service.Pwd = "123";
+            int count= _Service.Add(service);
+            return Ok();
         }
     }
 }

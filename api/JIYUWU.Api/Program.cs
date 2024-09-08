@@ -39,7 +39,12 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(op =>
+{
+    op.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+    op.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+    op.SerializerSettings.Converters.Add(new LongCovert());
+});
 //初始化配置文件
 AppSetting.Init(builder.Services, configuration);
 //// 调用 ConfigureContainer 方法，注册 Autofac 容器中的自定义模块

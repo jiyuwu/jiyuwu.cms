@@ -3,6 +3,7 @@ using JIYUWU.Core.Filter;
 using JIYUWU.Entity.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace JIYUWU.Core.Common
 {
@@ -22,6 +23,54 @@ namespace JIYUWU.Core.Common
         {
             Service = service;
         }
+        #region 新增
+        [HttpPost, Route("Add")]
+        public virtual ActionResult Add([FromBody] SaveModel saveModel)
+        {
+            _baseWebResponseContent = InvokeService("Add",
+                new Type[] { typeof(SaveModel) },
+                new object[] { saveModel }) as WebResponseContent;
+            Logger.Info(LoggerType.Add, null, _baseWebResponseContent.Status ? "Ok" : _baseWebResponseContent.Message);
+            _baseWebResponseContent.Data = _baseWebResponseContent.Data?.Serialize();
+            return Json(_baseWebResponseContent);
+        }
+        #endregion
+
+        #region 修改
+        [HttpPost, Route("Update")]
+        public virtual ActionResult Update([FromBody] SaveModel saveModel)
+        {
+            _baseWebResponseContent = InvokeService("Update", new object[] { saveModel }) as WebResponseContent;
+            Logger.Info(LoggerType.Edit, null, _baseWebResponseContent.Status ? "Ok" : _baseWebResponseContent.Message);
+            _baseWebResponseContent.Data = _baseWebResponseContent.Data?.Serialize();
+            return Json(_baseWebResponseContent);
+        }
+        #endregion
+
+        #region 删除
+        [HttpPost, Route("Del")]
+        public virtual ActionResult Del([FromBody] object[] keys)
+        {
+            _baseWebResponseContent = InvokeService("Del", new object[] { keys, true }) as WebResponseContent;
+            Logger.Info(LoggerType.Del, keys.Serialize(), _baseWebResponseContent.Status ? "Ok" : _baseWebResponseContent.Message);
+            return Json(_baseWebResponseContent);
+        }
+        #endregion
+
+        #region 查询
+        [HttpPost, Route("GetPageData")]
+        public virtual ActionResult GetPageData([FromBody] PageDataOptions loadData)
+        {
+            return JsonNormal(InvokeService("GetPageData", new object[] { loadData }));
+        }
+        [HttpPost, Route("GetDetailPage")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public virtual ActionResult GetDetailPage([FromBody] PageDataOptions loadData)
+        {
+            return Content(InvokeService("GetDetailPage", new object[] { loadData }).Serialize());
+        }
+        #endregion
+
         /// <summary>
         /// 调用service方法
         /// </summary>
