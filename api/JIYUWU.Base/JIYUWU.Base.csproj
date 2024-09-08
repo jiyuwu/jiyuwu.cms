@@ -10,4 +10,8 @@
     <ProjectReference Include="..\JIYUWU.Entity\JIYUWU.Entity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IService\Base\" />
+  </ItemGroup>
+
 </Project>
