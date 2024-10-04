@@ -1,15 +1,62 @@
 // 模拟后端动态生成路由
 import { defineFakeRoute } from "vite-plugin-fake-server/client";
-
+import { system } from "@/router/enums";
 /**
  * roles：页面级别权限，这里模拟二种 "admin"、"common"
  * admin：管理员角色
  * common：普通角色
  */
+const systemManagementRouter = {
+  path: "/system",
+  meta: {
+    icon: "ri:settings-3-line",
+    title: "menus.pureSysManagement",
+    rank: system
+  },
+  children: [
+    {
+      path: "/system/user/index",
+      name: "SystemUser",
+      meta: {
+        icon: "ri:admin-line",
+        title: "menus.pureUser",
+        roles: ["admin"]
+      }
+    },
+    {
+      path: "/system/role/index",
+      name: "SystemRole",
+      meta: {
+        icon: "ri:admin-fill",
+        title: "menus.pureRole",
+        roles: ["admin"]
+      }
+    },
+    {
+      path: "/system/menu/index",
+      name: "SystemMenu",
+      meta: {
+        icon: "ep:menu",
+        title: "menus.pureSystemMenu",
+        roles: ["admin"]
+      }
+    },
+    {
+      path: "/system/dept/index",
+      name: "SystemDept",
+      meta: {
+        icon: "ri:git-branch-line",
+        title: "menus.pureDept",
+        roles: ["admin"]
+      }
+    }
+  ]
+};
+
 const permissionRouter = {
   path: "/permission",
   meta: {
-    title: "权限管理",
+    title: "menus.purePermission",
     icon: "ep:lollipop",
     rank: 10
   },
@@ -18,14 +65,14 @@ const permissionRouter = {
       path: "/permission/page/index",
       name: "PermissionPage",
       meta: {
-        title: "页面权限",
+        title: "menus.purePermissionPage",
         roles: ["admin", "common"]
       }
     },
     {
       path: "/permission/button",
       meta: {
-        title: "按钮权限",
+        title: "menus.purePermissionButton",
         roles: ["admin", "common"]
       },
       children: [
@@ -34,7 +81,7 @@ const permissionRouter = {
           component: "permission/button/index",
           name: "PermissionButtonRouter",
           meta: {
-            title: "路由返回按钮权限",
+            title: "menus.purePermissionButtonRouter",
             auths: [
               "permission:btn:add",
               "permission:btn:edit",
@@ -47,7 +94,7 @@ const permissionRouter = {
           component: "permission/button/perms",
           name: "PermissionButtonLogin",
           meta: {
-            title: "登录接口返回按钮权限"
+            title: "menus.purePermissionButtonLogin"
           }
         }
       ]
@@ -62,7 +109,7 @@ export default defineFakeRoute([
     response: () => {
       return {
         success: true,
-        data: [permissionRouter]
+        data: [systemManagementRouter, permissionRouter]
       };
     }
   }
