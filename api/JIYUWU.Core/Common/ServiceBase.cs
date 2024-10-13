@@ -10,6 +10,9 @@ using JIYUWU.Entity.Base;
 using JIYUWU.Core.Filter;
 using JIYUWU.Core.DbSqlSugar;
 using Microsoft.AspNetCore.Routing;
+using JIYUWU.Core.UserManager;
+using Microsoft.VisualBasic.FileIO;
+using SqlSugar.DistributedSystem.Snowflake;
 
 namespace JIYUWU.Core.Common
 {
@@ -313,6 +316,30 @@ namespace JIYUWU.Core.Common
         /// <summary>
         /// 获取配置的创建人ID创建时间创建人,修改人ID修改时间、修改人与数据相同的字段
         /// </summary>
+        private static string[] _userIgnoreFields { get; set; }
+        /// <summary>
+        /// 获取配置的创建人ID创建时间创建人,修改人ID修改时间、修改人与数据相同的字段
+        /// </summary>
+        private static string[] UserIgnoreFields
+        {
+            get
+            {
+                if (_userIgnoreFields != null) return _userIgnoreFields;
+                List<string> fields = new List<string>();
+                //逻辑删除字段
+                if (!string.IsNullOrEmpty(AppSetting.LogicDelField))
+                {
+                    fields.Add(AppSetting.LogicDelField);
+                }
+                fields.AddRange(CreateFields);
+                fields.AddRange(ModifyFields);
+                _userIgnoreFields = fields.ToArray();
+                return _userIgnoreFields;
+            }
+        }
+        /// <summary>
+        /// 获取配置的创建人ID创建时间创建人,修改人ID修改时间、修改人与数据相同的字段
+        /// </summary>
         private static string[] _createFields { get; set; }
         private static string[] CreateFields
         {
@@ -342,6 +369,94 @@ namespace JIYUWU.Core.Common
         #endregion
 
         #region 新增
+        public virtual WebResponseContent Add(SaveModel saveDataModel)
+        {
+            if (AddOnExecute != null)
+            {
+                Response = AddOnExecute(saveDataModel);
+                if (CheckResponseResult()) return Response;
+            }
+            if (saveDataModel == null
+                || saveDataModel.MainData == null
+                || saveDataModel.MainData.Count == 0)
+                return Response.Set(ResponseType.ParametersLack, false);
+
+            saveDataModel.DetailData = saveDataModel.DetailData?.Where(x => x.Count > 0).ToList();
+            Type type = typeof(T);
+
+            if (saveDataModel.MainData.Count == 0)
+                return Response.Error("保存的数据为空，请检查model是否配置正确!");
+
+            //过滤逻辑删除
+            var logicDelProperty = GetLogicDelProperty<T>();
+            if (logicDelProperty != null)
+            {
+                saveDataModel.MainData[logicDelProperty.Name] = (int)DelStatus.正常;
+            }
+
+            UserInfo userInfo = UserContext.Current.UserInfo;
+            saveDataModel.SetDefaultVal(AppSetting.CreateMember, userInfo);
+
+            //2024.06.10增加数据版本号管理
+            if (!string.IsNullOrEmpty(saveDataModel.DataVersionField))
+            {
+                saveDataModel.MainData.TryAdd(saveDataModel.DataVersionField, Guid.NewGuid().ToString());
+            }
+
+            PropertyInfo keyPro = type.GetKeyProperty();
+            if (keyPro.PropertyType == typeof(Guid))
+            {
+                saveDataModel.MainData.Add(keyPro.Name, Guid.NewGuid());
+            }
+            else if (keyPro.PropertyType == typeof(long) && AppSetting.UseSnow)
+            {
+                saveDataModel.MainData.Add(keyPro.Name, new IdWorker(1,1).NextId());
+            }
+            else
+            {
+                saveDataModel.MainData.Remove(keyPro.Name);
+            }
+
+            //一对多
+            //if (saveDataModel.Details != null && saveDataModel.Details.Count() > 0)
+            //{
+            //    return AddMultipleDetail(saveDataModel);
+            //}
+
+            //没有明细直接保存返回
+            if (saveDataModel.DetailData == null || saveDataModel.DetailData.Count == 0)
+            {
+                T mainEntity = saveDataModel.MainData.DicToEntity<T>();
+
+                if (base.AddOnExecuting != null)
+                {
+                    Response = base.AddOnExecuting(mainEntity, null);
+                    if (CheckResponseResult()) return Response;
+                }
+                Response = repository.DbContextBeginTransaction(() =>
+                {
+                    repository.Add(mainEntity, true);
+                    saveDataModel.MainData[keyPro.Name] = keyPro.GetValue(mainEntity);
+                    Response.OK(ResponseType.SaveSuccess);
+                    if (base.AddOnExecuted != null)
+                    {
+                        Response = base.AddOnExecuted(mainEntity, null);
+                    }
+                    return Response;
+                });
+                if (Response.Status) Response.Data = new { data = saveDataModel.MainData };
+                return Response;
+            }
+
+            //Type detailType = GetRealDetailType();
+
+            //return typeof(ServiceBase<T, TRepository>)
+            //    .GetMethod("Add", BindingFlags.Instance | BindingFlags.NonPublic)
+            //    .MakeGenericMethod(new Type[] { detailType })
+            //    .Invoke(this, new object[] { saveDataModel })
+            //    as WebResponseContent;
+            return Response.Error("暂不支持多表编辑!");
+        }
         public virtual int Add(T entity)
         {
             // 新增自动字段
@@ -365,6 +480,101 @@ namespace JIYUWU.Core.Common
         #endregion
 
         #region 修改
+        public virtual WebResponseContent Update(SaveModel saveModel)
+        {
+
+            if (UpdateOnExecute != null)
+            {
+                Response = UpdateOnExecute(saveModel);
+                if (CheckResponseResult()) return Response;
+            }
+            if (saveModel == null)
+                return Response.Error(ResponseType.ParametersLack);
+
+            Type type = typeof(T);
+
+            //设置修改时间,修改人的默认值
+            UserInfo userInfo = UserContext.Current.UserInfo;
+            saveModel.SetDefaultVal(AppSetting.ModifyMember, userInfo);
+
+            PropertyInfo mainKeyProperty = type.GetKeyProperty();
+
+            object keyDefaultVal = null;
+            if (mainKeyProperty.PropertyType == typeof(string))
+            {
+                keyDefaultVal = "";
+            }
+            else
+            {
+                //获取主建类型的默认值用于判断后面数据是否正确,int long默认值为0,guid :0000-000....
+                keyDefaultVal = mainKeyProperty.PropertyType.Assembly.CreateInstance(mainKeyProperty.PropertyType.FullName);//.ToString();
+            }
+            //判断是否包含主键
+            if (mainKeyProperty == null
+                || !saveModel.MainData.ContainsKey(mainKeyProperty.Name)
+                || saveModel.MainData[mainKeyProperty.Name] == null
+                )
+            {
+                return Response.Error(ResponseType.NoKey);
+            }
+
+            object mainKeyVal = saveModel.MainData[mainKeyProperty.Name];
+            //判断主键类型是否正确
+            (bool, string, object) validation = mainKeyProperty.ValidationValueForDbType(mainKeyVal).FirstOrDefault();
+            if (!validation.Item1)
+                return Response.Error(ResponseType.KeyError);
+
+            object valueType = mainKeyVal.ToString().ChangeType(mainKeyProperty.PropertyType);
+            //判断主键值是不是当前类型的默认值
+            if (valueType == null ||
+                (!valueType.GetType().Equals(mainKeyProperty.PropertyType)
+                || valueType.ToString() == keyDefaultVal.ToString()
+                ))
+                return Response.Error(ResponseType.KeyError);
+
+            if (saveModel.MainData.Count <= 1) return Response.Error("系统没有配置好编辑的数据，请检查model或设置编辑行再点击生成model!");
+
+            Expression<Func<T, bool>> expression = mainKeyProperty.Name.CreateExpression<T>(mainKeyVal.ToString(), LinqExpressionType.Equal);
+            if (!repository.Exists(expression)) return Response.Error("保存的数据不存在!");
+
+            saveModel.DetailData = saveModel.DetailData == null
+                                         ? new List<Dictionary<string, object>>()
+                                         : saveModel.DetailData.Where(x => x.Count > 0).ToList();
+
+            //没有明细的直接保存主表数据
+            if (!(saveModel.DetailData.Count > 0 || saveModel.DelKeys?.Count > 0 || (saveModel.Details != null && saveModel.Details.Count > 0)))
+            {
+                saveModel.SetDefaultVal(AppSetting.ModifyMember, userInfo);
+                T mainEntity = saveModel.MainData.DicToEntity<T>();
+                if (UpdateOnExecuting != null)
+                {
+                    Response = UpdateOnExecuting(mainEntity, null, null, null);
+                    if (CheckResponseResult()) return Response;
+                }
+                //不修改!CreateFields.Contains创建人信息
+                repository.Update(mainEntity, type.GetEditField().Where(c => saveModel.MainData.Keys.Contains(c) && !CreateFields.Contains(c)).ToArray());
+                if (base.UpdateOnExecuted == null)
+                {
+                    repository.SaveChanges();
+                    Response.OK(ResponseType.SaveSuccess);
+                }
+                else
+                {
+                    Response = repository.DbContextBeginTransaction(() =>
+                    {
+                        repository.SaveChanges();
+                        Response = UpdateOnExecuted(mainEntity, null, null, null);
+                        return Response;
+                    });
+                }
+                if (Response.Status) Response.Data = new { data = mainEntity };
+                if (Response.Status && string.IsNullOrEmpty(Response.Message))
+                    Response.OK(ResponseType.SaveSuccess);
+                return Response;
+            }
+
+            return Response.Error("暂不支持多表编辑!");
+        }
         /// <summary>
         /// 修改实体，并自动处理修改人ID、修改时间等字段
         /// </summary>
@@ -393,6 +603,45 @@ namespace JIYUWU.Core.Common
         #endregion
 
         #region 删除
+        public virtual WebResponseContent Del(object[] keys, bool delList = true)
+        {
+            Type entityType = typeof(T);
+            var keyProperty = entityType.GetKeyProperty();
+            if (keyProperty == null || keys == null || keys.Length == 0) return Response.Error(ResponseType.NoKeyDel);
+            string tKey = keyProperty.Name;
+            if (string.IsNullOrEmpty(tKey))
+                return Response.Error("没有主键不能删除");
+                        if (DelOnExecuting != null)
+            {
+                Response = DelOnExecuting(keys);
+                if (CheckResponseResult()) return Response;
+            }
+            FieldType fieldType = entityType.GetFieldType();
+            string joinKeys = (fieldType == FieldType.Int || fieldType == FieldType.BigInt)
+                            ? string.Join(",", keys): $"'{string.Join("','", keys)}'";
+
+            string sql = $"DELETE FROM {entityType.GetEntityTableName()} where {tKey} in ({joinKeys});";
+            // 2020.08.06增加pgsql删除功能
+            if (DBType.Name == DbCurrentType.PgSql.ToString())
+            {
+                sql = $"DELETE FROM \"public\".\"{entityType.GetEntityTableName()}\" where \"{tKey}\" in ({joinKeys});";
+            }
+
+            //可能在删除后还要做一些其它数据库新增或删除操作，这样就可能需要与删除保持在同一个事务中处理
+            //采用此方法 repository.DbContextBeginTransaction(()=>{//do delete......and other});
+            //做的其他操作，在DelOnExecuted中加入委托实现
+            Response = repository.DbContextBeginTransaction(() =>
+            {
+                repository.ExecuteSqlCommand(sql);
+                if (DelOnExecuted != null)
+                {
+                    Response = DelOnExecuted(keys);
+                }
+                return Response;
+            });
+            if (Response.Status && string.IsNullOrEmpty(Response.Message)) Response.OK(ResponseType.DelSuccess);
+            return Response;
+        }
         /// <summary>
         /// 根据实体对象删除数据
         /// </summary>
@@ -424,6 +673,13 @@ namespace JIYUWU.Core.Common
         {
             // 调用仓储层的 Deleteable 方法，批量删除多个主键ID对应的记录
             return repository.SqlSugarClient.Deleteable<T>().In(ids).ExecuteCommand();
+        }
+        #endregion
+
+        #region 返回
+        private bool CheckResponseResult()
+        {
+            return !Response.Status || Response.Code == "-1";
         }
         #endregion
     }

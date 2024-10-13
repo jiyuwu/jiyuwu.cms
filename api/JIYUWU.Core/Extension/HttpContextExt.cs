@@ -1,4 +1,7 @@
 ﻿using JIYUWU.Core.Common;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,12 @@ namespace JIYUWU.Core.Extension
 {
     public static class HttpContextExt
     {
+        public static IApplicationBuilder UseStaticHttpContext(this IApplicationBuilder app)
+        {
+            var httpContextAccessor = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+            Common.HttpContext.Configure(httpContextAccessor);
+            return app;
+        }
         public static object UserAgent { get; private set; }
 
         public static T GetService<T>(this Microsoft.AspNetCore.Http.HttpContext context) where T : class

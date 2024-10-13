@@ -22,7 +22,7 @@ namespace JIYUWU.Api.Controllers.Base
             _Repository = Repository;
             _Service=service;
         }
-        [HttpGet, Route("getVierificationCode"), AllowAnonymous]
+        [HttpGet, Route("getVierificationCode")]
         public IActionResult GetVierificationCode()
         {
             string code = "123";
@@ -35,8 +35,8 @@ namespace JIYUWU.Api.Controllers.Base
             HttpContext.GetService<IMemoryCache>().Set(data.uuid.ToString(), code, new TimeSpan(0, 5, 0));
             return Json(data);
         }
-        [HttpPost, Route("AddDB"), AllowAnonymous]
-        public IActionResult Add()
+        [HttpPost, Route("AddDB")]
+        public IActionResult AddDB()
         {
             Base_DbService service = new Base_DbService();
             service.DbServiceName = "test";

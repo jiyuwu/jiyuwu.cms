@@ -1,6 +1,7 @@
 ﻿using JIYUWU.Core.Common;
 using JIYUWU.Core.UserManager;
 using JIYUWU.Entity.Base;
+using Microsoft.VisualBasic.FileIO;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -60,6 +61,154 @@ namespace JIYUWU.Core.Extension
             }
             return propertyKeyValues;
         }
+        public static IEnumerable<(bool, string, object)> ValidationValueForDbType(this PropertyInfo propertyInfo, params object[] values)
+        {
+            string dbTypeName = propertyInfo.GetTypeCustomValue<ColumnAttribute>(c => c.TypeName);
+            foreach (object value in values)
+            {
+                yield return dbTypeName.ValidationVal(value, propertyInfo);
+            }
+        }
+        public static (bool, string, object) ValidationVal(this string dbType, object value, PropertyInfo propertyInfo = null)
+        {
+            if (string.IsNullOrEmpty(dbType))
+            {
+                dbType = propertyInfo != null ? propertyInfo.GetProperWithDbType() : SqlDbTypeName.NVarChar;
+            }
+            dbType = dbType.ToLower();
+            string val = value?.ToString();
+            //验证长度
+            string reslutMsg = string.Empty;
+            if (dbType == SqlDbTypeName.Int)
+            {
+                if (!value.IsInt())
+                    reslutMsg = "只能为有效整数";
+            }  //2021.10.12增加属性校验long类型的支持
+            else if (dbType == SqlDbTypeName.BigInt)
+            {
+                if (!long.TryParse(val, out _))
+                {
+                    reslutMsg = "只能为有效整数";
+                }
+            }
+            else if (dbType == SqlDbTypeName.DateTime
+                || dbType == SqlDbTypeName.Date
+                || dbType == SqlDbTypeName.SmallDateTime
+                || dbType == SqlDbTypeName.SmallDate
+                )
+            {
+                if (!value.IsDate())
+                    reslutMsg = "必须为日期格式";
+            }
+            else if (dbType == SqlDbTypeName.Float || dbType == SqlDbTypeName.Decimal || dbType == SqlDbTypeName.Double)
+            {
+                if (!val.IsNumber(null))
+                {
+                    // string[] arr = (formatString ?? "10,0").Split(',');
+                    // reslutMsg = $"整数{arr[0]}最多位,小数最多{arr[1]}位";
+                    reslutMsg = "不是有效数字";
+                }
+            }
+            else if (dbType == SqlDbTypeName.UniqueIdentifier)
+            {
+                if (!val.IsGuid())
+                {
+                    reslutMsg = propertyInfo.Name + "Guid不正确";
+                }
+            }
+            else if (propertyInfo != null
+                && (dbType == SqlDbTypeName.VarChar
+                || dbType == SqlDbTypeName.NVarChar
+                || dbType == SqlDbTypeName.NChar
+                || dbType == SqlDbTypeName.Char
+                || dbType == SqlDbTypeName.Text))
+            {
+
+                //默认nvarchar(max) 、text 长度不能超过20000
+                if (val.Length > 200000)
+                {
+                    reslutMsg = $"字符长度最多【200000】";
+                }
+                else
+                {
+                    int length = propertyInfo.GetTypeCustomValue<MaxLengthAttribute>(x => new { x.Length }).GetInt();
+                    if (length == 0) { return (true, null, null); }
+                    //判断双字节与单字段
+                    else if (length < 8000 &&
+                        ((dbType.Substring(0, 1) != "n"
+                        && Encoding.UTF8.GetBytes(val.ToCharArray()).Length > length)
+                         || val.Length > length)
+                         )
+                    {
+                        reslutMsg = $"最多只能【{length}】个字符。";
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(reslutMsg) && propertyInfo != null)
+            {
+                reslutMsg = propertyInfo.GetDisplayName() + reslutMsg;
+            }
+            return (reslutMsg == "" ? true : false, reslutMsg, value);
+        }
+        public static string GetDisplayName(this PropertyInfo property)
+        {
+            string displayName = property.GetTypeCustomValue<DisplayAttribute>(x => new { x.Name });
+            if (string.IsNullOrEmpty(displayName))
+            {
+                return property.Name;
+            }
+            return displayName;
+        }
+        private static readonly Dictionary<Type, string> ProperWithDbType = new Dictionary<Type, string>() {
+            {  typeof(string),SqlDbTypeName.NVarChar },
+            { typeof(DateTime),SqlDbTypeName.DateTime},
+            {typeof(long),SqlDbTypeName.BigInt },
+            {typeof(int),SqlDbTypeName.Int},
+            { typeof(decimal),SqlDbTypeName.Decimal },
+            { typeof(float),SqlDbTypeName.Float },
+            { typeof(double),SqlDbTypeName.Double },
+            {  typeof(byte),SqlDbTypeName.Int },//类型待完
+            { typeof(Guid),SqlDbTypeName.UniqueIdentifier}
+        };
+        public static string GetProperWithDbType(this PropertyInfo propertyInfo)
+        {
+            bool result = ProperWithDbType.TryGetValue(propertyInfo.PropertyType, out string value);
+            if (result)
+            {
+                return value;
+            }
+            return SqlDbTypeName.NVarChar;
+        }
+        private static string[] _userEditFields { get; set; }
+
+        private static string[] UserEditFields
+        {
+            get
+            {
+                if (_userEditFields != null) return _userEditFields;
+                _userEditFields = AppSetting.CreateMember.GetType().GetProperties()
+                     .Select(x => x.GetValue(AppSetting.ModifyMember)?.ToString()?.ToLower())
+                     .Where(w => !string.IsNullOrEmpty(w)).ToArray();
+                return _userEditFields;
+            }
+        }
+        public static bool ContainsCustomAttributes(this PropertyInfo propertyInfo, Type type)
+        {
+            propertyInfo.GetTypeCustomAttributes(type, out bool contains);
+            return contains;
+        }
+        /// <summary>
+        /// 获取实体的编辑字段
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string[] GetEditField(this Type type)
+        {
+            Type editType = typeof(EditableAttribute);
+            PropertyInfo[] propertyInfo = type.GetProperties();
+            string keyName = propertyInfo.GetKeyName();
+            return propertyInfo.Where(x => x.Name != keyName && (UserEditFields.Contains(x.Name.ToLower()) || x.ContainsCustomAttributes(editType))).Select(s => s.Name).ToArray();
+        }
         /// <summary>
         /// 获取属性的指定属性
         /// </summary>
@@ -71,6 +220,25 @@ namespace JIYUWU.Core.Extension
             object[] obj = member.GetCustomAttributes(type, false);
             if (obj.Length == 0) return null;
             return obj[0];
+        }
+        /// <summary>
+        /// 根据实体获取key的类型，用于update或del操作
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Common.FieldType GetFieldType(this Type typeEntity)
+        {
+            Common.FieldType fieldType;
+            string columnType = typeEntity.GetProperties().Where(x => x.Name == typeEntity.GetKeyName()).ToList()[0].GetColumnType(false).Value;
+            switch (columnType)
+            {
+                case SqlDbTypeName.Int: fieldType = Common.FieldType.Int; break;
+                case SqlDbTypeName.BigInt: fieldType = Common.FieldType.BigInt; break;
+                case SqlDbTypeName.VarChar: fieldType = Common.FieldType.VarChar; break;
+                case SqlDbTypeName.UniqueIdentifier: fieldType = Common.FieldType.UniqueIdentifier; break;
+                default: fieldType = Common.FieldType.NvarChar; break;
+            }
+            return fieldType;
         }
         public static ISugarQueryable<T> WhereNotEmpty<T>(this ISugarQueryable<T> queryable, [NotNull] Expression<Func<T, object>> field, string value, LinqExpressionType linqExpression = LinqExpressionType.Equal)
         {
@@ -100,7 +268,7 @@ namespace JIYUWU.Core.Extension
         /// <param name="setType">true=新增设置"CreateID", "Creator", "CreateDate"值
         /// false=编辑设置"ModifyID", "Modifier", "ModifyDate"值
         /// </param>
-        private static TSource SetDefaultVal<TSource>(this TSource source, TableDefaultColumns defaultColumns, UserInfo userInfo = null)
+        public static TSource SetDefaultVal<TSource>(this TSource source, TableDefaultColumns defaultColumns, UserInfo userInfo = null)
         {
             userInfo = userInfo ?? UserContext.Current.UserInfo;
             foreach (PropertyInfo property in typeof(TSource).GetProperties())
@@ -245,6 +413,24 @@ namespace JIYUWU.Core.Extension
         public static string GetKeyName(this Type typeinfo)
         {
             return typeinfo.GetProperties().GetKeyName();
+        }
+        /// <summary>
+        /// 获取表带有EntityAttribute属性的真实表名
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetEntityTableName(this Type type, bool dbName = true)
+        {
+            if (!dbName)
+            {
+                return type.Name;
+            }
+            Attribute attribute = type.GetCustomAttribute(typeof(EntityAttribute));
+            if (attribute != null && attribute is EntityAttribute)
+            {
+                return (attribute as EntityAttribute).TableName ?? type.Name;
+            }
+            return type.Name;
         }
         public static string GetKeyType(this Type typeinfo)
         {

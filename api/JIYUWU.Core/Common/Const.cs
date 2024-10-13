@@ -99,6 +99,14 @@ namespace JIYUWU.Core.Common
 
 
     #region 枚举类型
+    public enum FieldType
+    {
+        VarChar = 0,
+        NvarChar,
+        Int,
+        BigInt,
+        UniqueIdentifier
+    }
     public enum ResponseType
     {
         ServerError = 1,

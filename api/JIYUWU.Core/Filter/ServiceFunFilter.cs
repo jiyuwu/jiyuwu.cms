@@ -103,6 +103,9 @@ namespace JIYUWU.Core.Filter
         /// </summary>
         protected Func<T, object, WebResponseContent> AddOnExecuted;
 
+        protected Func<object[], WebResponseContent> DelOnExecuting;
+        protected Func<object[], WebResponseContent> DelOnExecuted;
+
         /// <summary>
         /// 进入审批流程方法之前
         /// </summary>
@@ -128,6 +131,7 @@ namespace JIYUWU.Core.Filter
         ///  List<object>=为删除的细的对象Key
         /// </summary>
         protected Func<T, object, object, List<object>, WebResponseContent> UpdateOnExecuting;
+        protected Func<T, object, object, List<object>, WebResponseContent> UpdateOnExecuted;
 
 
         /// <summary>
