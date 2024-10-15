@@ -1,10 +1,7 @@
 // store.js
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';  // Vue 3 中的 vuex 模块导入方式
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
+const store = createStore({
   state: {
     WId: "1"
   },
