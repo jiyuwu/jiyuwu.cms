@@ -72,11 +72,11 @@ namespace JIYUWU.Core.Common
         {
             var log = new Base_Log()
             {
+                Id = Guid.NewGuid().ToString(),
                 BeginDate = DateTime.Now,
                 EndDate = DateTime.Now,
-                User_Id = 0,
+                UserId = "",
                 UserName = "",
-                //  Role_Id = ,
                 LogType = loggerType.ToString(),
                 ExceptionInfo = ex,
                 RequestParameter = requestParameter,
@@ -116,9 +116,8 @@ namespace JIYUWU.Core.Common
                     //Id = Guid.NewGuid().ToString(),
                     BeginDate = cctionObserver.RequestDate,
                     EndDate = DateTime.Now,
-                    User_Id = userInfo.User_Id,
+                    UserId = userInfo.UserId,
                     UserName = userInfo.UserTrueName,
-                    Role_Id = userInfo.Role_Id,
                     LogType = loggerType,
                     ExceptionInfo = ex,
                     RequestParameter = requestParameter,
@@ -214,9 +213,8 @@ namespace JIYUWU.Core.Common
             row["ServiceIP"] = log.ServiceIP;
             row["BrowserType"] = log.BrowserType;
             row["Url"] = log.Url;
-            row["User_Id"] = log.User_Id ?? -1;
+            row["UserId"] = log.UserId ?? "";
             row["UserName"] = log.UserName;
-            row["Role_Id"] = log.Role_Id ?? -1;
             queueTable.Rows.Add(row);
         }
         private static DataTable CreateEmptyTable()

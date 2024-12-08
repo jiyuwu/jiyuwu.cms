@@ -30,12 +30,12 @@ namespace JIYUWU.Entity.Base
         public string DbServiceName { get; set; }
 
         /// <summary>
-        ///所属集团
+        ///所属公司
         /// </summary>
-        [Display(Name = "所属集团")]
+        [Display(Name = "所属公司")]
         [Column(TypeName = "nvarchar(50)")]
         [Editable(true)]
-        public string GroupId { get; set; }
+        public string CompanyId { get; set; }
 
         /// <summary>
         /// 数据库IP
@@ -97,9 +97,9 @@ namespace JIYUWU.Entity.Base
         ///是否可用
         /// </summary>
         [Display(Name = "是否可用")]
-        [Column(TypeName = "int")]
+        [Column(TypeName = "bool")]
         [Editable(true)]
-        public int? Enable { get; set; }
+        public bool Enable { get; set; }
 
         /// <summary>
         ///备注
@@ -111,21 +111,13 @@ namespace JIYUWU.Entity.Base
         public string Remark { get; set; }
 
         /// <summary>
-        ///
-        /// </summary>
-        [Display(Name = "CreateId")]
-        [Column(TypeName = "int")]
-        [Editable(true)]
-        public int? CreateId { get; set; }
-
-        /// <summary>
         ///创建人
         /// </summary>
         [Display(Name = "创建人")]
-        [MaxLength(30)]
-        [Column(TypeName = "nvarchar(30)")]
+        [MaxLength(50)]
+        [Column(TypeName = "nvarchar(50)")]
         [Editable(true)]
-        public string Creator { get; set; }
+        public string CreateId { get; set; }
 
         /// <summary>
         ///创建时间
@@ -136,21 +128,13 @@ namespace JIYUWU.Entity.Base
         public DateTime? CreateDate { get; set; }
 
         /// <summary>
-        ///
-        /// </summary>
-        [Display(Name = "ModifyId")]
-        [Column(TypeName = "int")]
-        [Editable(true)]
-        public int? ModifyId { get; set; }
-
-        /// <summary>
         ///修改人
         /// </summary>
         [Display(Name = "修改人")]
-        [MaxLength(30)]
-        [Column(TypeName = "nvarchar(30)")]
+        [MaxLength(50)]
+        [Column(TypeName = "nvarchar(50)")]
         [Editable(true)]
-        public string Modifier { get; set; }
+        public string ModifyId { get; set; }
 
         /// <summary>
         ///修改时间

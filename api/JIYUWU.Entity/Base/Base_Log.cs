@@ -13,9 +13,9 @@ namespace JIYUWU.Entity.Base
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         [Key]
         [Display(Name = "Id")]
-        [Column(TypeName = "int")]
+        [Column(TypeName = "nvarchar(50)")]
         [Required(AllowEmptyStrings = false)]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         ///开始时间
@@ -28,14 +28,14 @@ namespace JIYUWU.Entity.Base
         ///用户名称
         /// </summary>
         [Display(Name = "用户名称")]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "nvarchar(4000)")]
         public string UserName { get; set; }
 
         /// <summary>
         ///请求地址
         /// </summary>
         [Display(Name = "请求地址")]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "nvarchar(4000)")]
         public string Url { get; set; }
 
         /// <summary>
@@ -64,21 +64,21 @@ namespace JIYUWU.Entity.Base
         ///请求参数
         /// </summary>
         [Display(Name = "请求参数")]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "nvarchar(4000)")]
         public string RequestParameter { get; set; }
 
         /// <summary>
         ///响应参数
         /// </summary>
         [Display(Name = "响应参数")]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "nvarchar(4000)")]
         public string ResponseParameter { get; set; }
 
         /// <summary>
         ///异常信息
         /// </summary>
         [Display(Name = "异常信息")]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "nvarchar(4000)")]
         public string ExceptionInfo { get; set; }
 
         /// <summary>
@@ -110,14 +110,7 @@ namespace JIYUWU.Entity.Base
         /// </summary>
         [Display(Name = "用户ID")]
         [Column(TypeName = "int")]
-        public int? User_Id { get; set; }
-
-        /// <summary>
-        ///角色ID
-        /// </summary>
-        [Display(Name = "角色ID")]
-        [Column(TypeName = "int")]
-        public int? Role_Id { get; set; }
+        public string UserId { get; set; }
 
         /// <summary>
         ///结束时间

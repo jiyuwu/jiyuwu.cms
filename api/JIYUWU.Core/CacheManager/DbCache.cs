@@ -18,7 +18,7 @@ namespace JIYUWU.Core.CacheManager
                 s.DbIpAddress,
                 s.DatabaseName,
                 s.DbServiceId,
-                s.GroupId,
+                s.CompanyId,
                 s.UserId,
                 s.Remark,
                 s.PhoneNo,
@@ -32,7 +32,7 @@ namespace JIYUWU.Core.CacheManager
                     DatabaseName = s.DatabaseName,
                     DbServiceName = s.DbServiceName,
                     DbServiceId = s.DbServiceId,
-                    GroupId = s.GroupId,
+                    CompanyId = s.CompanyId,
                     UserId = s.UserId,
                     Remark = s.Remark,
                     PhoneNo = s.PhoneNo

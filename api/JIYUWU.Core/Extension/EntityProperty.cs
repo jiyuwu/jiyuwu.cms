@@ -275,7 +275,7 @@ namespace JIYUWU.Core.Extension
             {
                 string filed = property.Name.ToLower();
                 if (filed == defaultColumns.UserIdField?.ToLower())
-                    property.SetValue(source, userInfo.User_Id);
+                    property.SetValue(source, userInfo.UserId);
 
                 if (filed == defaultColumns.UserNameField?.ToLower())
                     property.SetValue(source, userInfo.UserTrueName);

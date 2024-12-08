@@ -80,7 +80,7 @@ namespace JIYUWU.Core.UserManager
             if (_userInfo != null) return _userInfo;
             if (userId <= 0)
             {
-                _userInfo = new UserInfo() { RoleIds = new int[] { } };
+                _userInfo = new UserInfo() { RoleIds = new List<string>() { } };
                 return _userInfo;
             }
             //string key = userId.GetUserIdKey();
@@ -110,7 +110,7 @@ namespace JIYUWU.Core.UserManager
             //        DeptIds = string.IsNullOrEmpty(s.DeptIds) ? new List<Guid>() : s.DeptIds.Split(",").Select(x => (Guid)x.GetGuid()).ToList(),
             //        TenancyValue = null //用户租户字段请在此处返回实现
             //    }).FirstOrDefault();
-            return _userInfo ?? new UserInfo() { RoleIds = new int[] { } };
+            return _userInfo ?? new UserInfo() { RoleIds = new List<string>() { } };
         }
         /// <summary>
         /// 当前选中的数据库
