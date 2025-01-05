@@ -142,4 +142,18 @@ namespace JIYUWU.Entity.Base
         [Column(TypeName = "nvarchar(50)")]
         public string ModifyId { get; set; }
     }
+    #region 菜单树形路由
+    public class RouteMeta
+    {
+        public string Title { get; set; }
+        public List<string> Actions { get; set; }  // Actions 是一个数组，有些节点包含这个属性
+    }
+
+    public class RouteMenuItem
+    {
+        public string Name { get; set; }
+        public RouteMeta Meta { get; set; }
+        public List<RouteMenuItem> Children { get; set; }  // 子节点是递归的结构，可以包含更多子项
+    }
+    #endregion
 }

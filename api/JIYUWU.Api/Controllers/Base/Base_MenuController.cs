@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JIYUWU.Api.Controllers.Base
 {
-    [Route("api/Base_Menu")]
+    [Route("Base_Menu")]
     public class Base_MenuController : ApiBaseController<IBase_MenuService>
     {
         private IBase_MenuRepository _Repository;

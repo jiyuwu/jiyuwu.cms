@@ -70,6 +70,8 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty; // 将Swagger UI设置为应用的根路径（默认为 /swagger）
     });
 }
+// 添加跨域中间件
+app.UseCors(); // 确保跨域在路由中间件之前被调用
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();

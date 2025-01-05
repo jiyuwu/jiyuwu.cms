@@ -18,7 +18,8 @@ namespace JIYUWU.Core.Common
         protected JsonResult JsonNormal(object data, JsonSerializerSettings serializerSettings = null, bool formateDate = true)
         {
             serializerSettings = serializerSettings ?? new JsonSerializerSettings();
-            serializerSettings.ContractResolver = null;
+            // 设置属性名为首字母小写
+            serializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
             if (formateDate)
             {
                 serializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
@@ -27,22 +28,22 @@ namespace JIYUWU.Core.Common
             return  new JsonResult(data, serializerSettings);
         }
 
-        protected IActionResult Success(string message)
+        protected IActionResult Success(string msg="success")
         {
-            return JsonNormal(new { status = true, message });
+            return JsonNormal(new { code = 200, msg });
         }
-        protected IActionResult Success(string message, object data)
+        protected IActionResult Success(object data, string msg = "success")
         {
-            return JsonNormal(new { status = true, message, data });
+            return JsonNormal(new { code = 200, msg, data });
         }
 
-        protected IActionResult Error(string message)
+        protected IActionResult Error(string msg="error", int code=500)
         {
-            return JsonNormal(new { status = false, message });
+            return JsonNormal(new { code, msg });
         }
-        protected IActionResult Error(string message, object data)
+        protected IActionResult Error( object data, string msg = "error", int code=500)
         {
-            return JsonNormal(new { status = false, message, data });
+            return JsonNormal(new { code, msg, data });
         }
     }
     public class LongCovert : JsonConverter
