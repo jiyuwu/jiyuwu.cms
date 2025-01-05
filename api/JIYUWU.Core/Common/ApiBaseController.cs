@@ -4,6 +4,7 @@ using JIYUWU.Entity.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using static Dm.net.buffer.ByteArrayBuffer;
 
 namespace JIYUWU.Core.Common
 {
@@ -30,7 +31,7 @@ namespace JIYUWU.Core.Common
             _baseWebResponseContent = InvokeService("Add",
                 new Type[] { typeof(SaveModel) },
                 new object[] { saveModel }) as WebResponseContent;
-            Logger.Info(LoggerType.Add, null, _baseWebResponseContent.Status ? "Ok" : _baseWebResponseContent.Message);
+            Logger.Info(LoggerType.Add, null, _baseWebResponseContent.Code == 200 ? "Ok" : _baseWebResponseContent.Msg);
             _baseWebResponseContent.Data = _baseWebResponseContent.Data?.Serialize();
             return Json(_baseWebResponseContent);
         }
@@ -41,7 +42,7 @@ namespace JIYUWU.Core.Common
         public virtual ActionResult Update([FromBody] SaveModel saveModel)
         {
             _baseWebResponseContent = InvokeService("Update", new object[] { saveModel }) as WebResponseContent;
-            Logger.Info(LoggerType.Edit, null, _baseWebResponseContent.Status ? "Ok" : _baseWebResponseContent.Message);
+            Logger.Info(LoggerType.Edit, null, _baseWebResponseContent.Code == 200 ? "Ok" : _baseWebResponseContent.Msg);
             _baseWebResponseContent.Data = _baseWebResponseContent.Data?.Serialize();
             return Json(_baseWebResponseContent);
         }
@@ -52,7 +53,7 @@ namespace JIYUWU.Core.Common
         public virtual ActionResult Del([FromBody] object[] keys)
         {
             _baseWebResponseContent = InvokeService("Del", new object[] { keys, true }) as WebResponseContent;
-            Logger.Info(LoggerType.Del, keys.Serialize(), _baseWebResponseContent.Status ? "Ok" : _baseWebResponseContent.Message);
+            Logger.Info(LoggerType.Del, keys.Serialize(), _baseWebResponseContent.Code == 200 ? "Ok" : _baseWebResponseContent.Msg);
             return Json(_baseWebResponseContent);
         }
         #endregion

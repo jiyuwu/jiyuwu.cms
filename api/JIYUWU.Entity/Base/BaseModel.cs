@@ -79,7 +79,7 @@
     }
     public class PageGridData<T>
     {
-        public int status { get; set; }
+        public int code { get; set; } = 200;
         public string msg { get; set; }
         public int total { get; set; }
         public List<T> rows { get; set; }

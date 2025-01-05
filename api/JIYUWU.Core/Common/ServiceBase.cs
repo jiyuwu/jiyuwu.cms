@@ -59,7 +59,7 @@ namespace JIYUWU.Core.Common
 
         public ServiceBase(TRepository repository)
         {
-            Response = new WebResponseContent(true);
+            Response = new WebResponseContent(200);
             this.repository = repository;
         }
 
@@ -444,7 +444,7 @@ namespace JIYUWU.Core.Common
                     }
                     return Response;
                 });
-                if (Response.Status) Response.Data = new { data = saveDataModel.MainData };
+                if (Response.Code == 200) Response.Data = new { data = saveDataModel.MainData };
                 return Response;
             }
 
@@ -567,8 +567,8 @@ namespace JIYUWU.Core.Common
                         return Response;
                     });
                 }
-                if (Response.Status) Response.Data = new { data = mainEntity };
-                if (Response.Status && string.IsNullOrEmpty(Response.Message))
+                if (Response.Code == 200) Response.Data = new { data = mainEntity };
+                if (Response.Code == 200 && string.IsNullOrEmpty(Response.Msg))
                     Response.OK(ResponseType.SaveSuccess);
                 return Response;
             }
@@ -639,7 +639,7 @@ namespace JIYUWU.Core.Common
                 }
                 return Response;
             });
-            if (Response.Status && string.IsNullOrEmpty(Response.Message)) Response.OK(ResponseType.DelSuccess);
+            if (Response.Code == 200 && string.IsNullOrEmpty(Response.Msg)) Response.OK(ResponseType.DelSuccess);
             return Response;
         }
         /// <summary>
@@ -679,7 +679,7 @@ namespace JIYUWU.Core.Common
         #region 返回
         private bool CheckResponseResult()
         {
-            return !Response.Status || Response.Code == "-1";
+            return !Response.Code.Equals("200");
         }
         #endregion
     }

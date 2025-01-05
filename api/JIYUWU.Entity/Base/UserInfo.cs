@@ -30,13 +30,12 @@
     {
         public ObjectModelValidatorState()
         {
-            this.Status = true;
+            this.Code = 200;
         }
 
-        public bool Status { get; set; }
         public bool HasModelContent { get; set; }
-        public string Code { get; set; }
-        public string Message { get; set; }
+        public int Code { get; set; }
+        public string Msg { get; set; }
     }
     public class ObjectValidatorResult
     {
@@ -44,23 +43,23 @@
         {
 
         }
-        public ObjectValidatorResult(bool status)
+        public ObjectValidatorResult(int code)
         {
-            this.Status = status;
+            this.Code = code;
         }
-        public ObjectValidatorResult OK(string message)
+        public ObjectValidatorResult OK(string msg)
         {
-            this.Status = true;
-            this.Message = message;
+            this.Code =  200;
+            this.Msg = msg;
             return this;
         }
-        public ObjectValidatorResult Error(string message)
+        public ObjectValidatorResult Error(string msg)
         {
-            this.Status = false;
-            this.Message = message;
+            this.Code = 500;
+            this.Msg = msg;
             return this;
         }
-        public bool Status { get; set; }
-        public string Message { get; set; }
+        public int Code { get; set; }
+        public string Msg { get; set; }
     }
 }

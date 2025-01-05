@@ -56,7 +56,7 @@ namespace JIYUWU.Core.Common
                 DbContext.Ado.BeginTran();
 
                 webResponse = action();
-                if (webResponse.Status)
+                if (webResponse.Code == 200)
                 {
                     DbContext.Ado.CommitTran();
                 }

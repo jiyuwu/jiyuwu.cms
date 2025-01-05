@@ -12,88 +12,69 @@ namespace JIYUWU.Core.Common
         public WebResponseContent()
         {
         }
-        public WebResponseContent(bool status)
+        public WebResponseContent(int code)
         {
-            this.Status = status;
+            this.Code = code;
         }
-        public bool Status { get; set; }
-        public string Code { get; set; }
-        public string Message { get; set; }
+        public int Code { get; set; }
+        public string Msg { get; set; }
         public object Data { get; set; }
 
         public WebResponseContent OK()
         {
-            this.Status = true;
+            this.Code = 200;
             return this;
         }
-        public WebResponseContent OKData(object data)
-        {
-            this.Status = true;
-            this.Data = data;
-            return this;
-        }
-        public WebResponseContent OKData(string message, object data, bool ts = false)
-        {
-            this.Message = message;
-            this.Status = true;
-            this.Data = data;
-            return this;
-        }
+
         public static WebResponseContent Instance
         {
             get { return new WebResponseContent(); }
         }
-        public WebResponseContent OK(string message = null, object data = null, bool ts = true)
+        public WebResponseContent OK(string msg = null, object data = null, bool ts = true)
         {
-            this.Status = true;
-            this.Message = message;
+            this.Code = 200;
+            this.Msg = msg;
             this.Data = data;
             return this;
         }
         public WebResponseContent OKDataToString(object data = null)
         {
-            this.Status = true;
+            this.Code = 200;
             this.Data = data.Serialize();
             return this;
         }
         public WebResponseContent OK(ResponseType responseType, bool ts = true)
         {
-            return Set(responseType, true, true);
+            return Set(responseType, 200, true);
         }
-        public WebResponseContent Error(string message = null, bool ts = false)
+        public WebResponseContent Error(string msg = null, bool ts = false)
         {
-            this.Status = false;
-            this.Message = message;
+            this.Code = 500;
+            this.Msg = msg;
             return this;
         }
         public WebResponseContent Error(ResponseType responseType, bool ts = false)
         {
-            return Set(responseType, false, ts);
+            return Set(responseType, 500, ts);
         }
         public WebResponseContent Set(ResponseType responseType, bool ts = false)
         {
-            bool? b = null;
+            int? b = null;
             return this.Set(responseType, b, ts);
         }
-        public WebResponseContent Set(ResponseType responseType, bool? status, bool ts = false)
+        public WebResponseContent Set(ResponseType responseType, int? code, bool ts = false)
         {
-            return this.Set(responseType, null, status, ts);
+            return this.Set(responseType, null, code, ts);
         }
-        public WebResponseContent Set(ResponseType responseType, string msg, bool ts = false)
+        public WebResponseContent Set(ResponseType responseType, string msg, int? code, bool ts = false)
         {
-            bool? b = null;
-            return this.Set(responseType, msg, b);
-        }
-        public WebResponseContent Set(ResponseType responseType, string msg, bool? status, bool ts = false)
-        {
-            if (status != null)
+            if (code != null)
             {
-                this.Status = (bool)status;
+                this.Code = (int)code;
             }
-            this.Code = ((int)responseType).ToString();
+            this.Code = (int)responseType;
             if (!string.IsNullOrEmpty(msg))
             {
-                Message = msg;
                 return this;
             }
             return this;
@@ -111,7 +92,7 @@ namespace JIYUWU.Core.Common
         {
             context.Result = new ContentResult()
             {
-                Content = new { status = false, message = responseData.Message }.Serialize(),
+                Content = new { code = 200, msg = responseData.Msg }.Serialize(),
                 ContentType = ApplicationContentType.JSON,
                 StatusCode = (int)HttpStatusCode.Unauthorized
             };
@@ -133,7 +114,7 @@ namespace JIYUWU.Core.Common
             }
             else
             {
-                string desc = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(responseData.Message));
+                string desc = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(responseData.Msg));
                 actionResult = new ContentResult()
                 {
                     Content = $@"<html><head><title></title></head><body>{desc}</body></html>",

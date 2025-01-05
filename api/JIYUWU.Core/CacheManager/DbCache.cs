@@ -48,7 +48,7 @@ namespace JIYUWU.Core.CacheManager
 
         public static WebResponseContent Reload(WebResponseContent webResponse)
         {
-            if (webResponse.Status)
+            if (webResponse.Code==200)
             {
                 Init();
             }
