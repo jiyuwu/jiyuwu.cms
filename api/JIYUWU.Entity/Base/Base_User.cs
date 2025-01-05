@@ -166,4 +166,9 @@ namespace JIYUWU.Entity.Base
         [Column(TypeName = "datetime")]
         public DateTime? ModifyDate { get; set; }
     }
+    public class UserLogin
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
 }

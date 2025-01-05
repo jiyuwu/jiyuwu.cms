@@ -1,12 +1,13 @@
 ﻿using JIYUWU.Base.IRepository;
 using JIYUWU.Base.IService;
+using JIYUWU.Core.CacheManager;
 using JIYUWU.Core.Common;
 using JIYUWU.Core.Extension;
+using JIYUWU.Core.Filter;
 using JIYUWU.Entity.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
-using System.Xml.Linq;
 
 namespace JIYUWU.Api.Controllers.Base
 {
@@ -15,12 +16,14 @@ namespace JIYUWU.Api.Controllers.Base
     {
         private IBase_UserRepository _Repository;
         private IBase_UserService _Service;
+        private ICacheService _CacheService;
         [ActivatorUtilitiesConstructor]
-        public Base_UserController(IBase_UserService service,
+        public Base_UserController(IBase_UserService service,ICacheService cacheService,
                            IBase_UserRepository Repository)
        : base(service)
         {
             _Repository = Repository;
+            _CacheService = cacheService;
             _Service = service;
         }
         [HttpGet, Route("getVierificationCode")]
@@ -37,10 +40,32 @@ namespace JIYUWU.Api.Controllers.Base
             return Json(data);
         }
         [HttpPost, Route("Login")]
-        public IActionResult Login()
+        [NoPermissionRequired]
+        public IActionResult Login(UserLogin userLogin)
         {
-            var data = new { token="42000019780217605X"};
-            return Success(data);
+            Base_User user = _Repository.SqlSugarClient.Queryable<Base_User>().Where(x => x.UserName == userLogin.username && x.UserPwd == userLogin.password).First();
+            if (user == null)
+            {
+                return Error("用户名或密码错误");
+            }
+            else
+            {
+                var token = Guid.NewGuid().ToString();
+                user.Token = token;
+                int result =_Repository.SqlSugarClient.Updateable<Base_User>().SetColumns(it => new Base_User() { Token = token }).Where(it => it.UserId == user.UserId).ExecuteCommand();
+                if (result == 0)
+                {
+                    return Error("登录失败");
+                }
+                bool re= _Service.SetUserInfo(user, token);
+                if (!re)
+                {
+                    return Error("缓存设置失败");
+                }
+                var data = new { token };
+                return Success(data);
+            }
+            //var data = new { ="42000019780217605X"};        }
         }
         [HttpGet, Route("Detail")]
         public IActionResult Detail()

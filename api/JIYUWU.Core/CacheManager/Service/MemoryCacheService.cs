@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using JIYUWU.Core.Common;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace JIYUWU.Core.CacheManager
 {
     public class MemoryCacheService : ICacheService
     {
         protected IMemoryCache _cache;
+        private readonly string _prefixKey = AppSetting.GetSection("ConnectionStrs")["CacheTag"];
         public MemoryCacheService(IMemoryCache cache)
         {
             _cache = cache;
@@ -21,6 +24,7 @@ namespace JIYUWU.Core.CacheManager
             {
                 throw new ArgumentNullException(nameof(key));
             }
+            key=$"{_prefixKey}_{key}";
             return _cache.Get(key) != null;
         }
 
@@ -40,12 +44,14 @@ namespace JIYUWU.Core.CacheManager
             {
                 throw new ArgumentNullException(nameof(value));
             }
+            key = $"{_prefixKey}_{key}";
             _cache.Set(key, value);
             return Exists(key);
         }
 
         public bool AddObject(string key, object value, int expireSeconds = -1, bool isSliding = false)
         {
+            key = $"{_prefixKey}_{key}";
             if (expireSeconds != -1)
             {
                 _cache.Set(key,
@@ -63,6 +69,7 @@ namespace JIYUWU.Core.CacheManager
         }
         public bool Add(string key, string value, int expireSeconds = -1, bool isSliding = false)
         {
+            key = $"{_prefixKey}_{key}";
             return AddObject(key, value, expireSeconds, isSliding);
         }
         public void LPush(string key, string val)
@@ -92,6 +99,7 @@ namespace JIYUWU.Core.CacheManager
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan expiresSliding, TimeSpan expiressAbsoulte)
         {
+            key = $"{_prefixKey}_{key}";
             _cache.Set(key, value,
                     new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(expiresSliding)
@@ -110,6 +118,7 @@ namespace JIYUWU.Core.CacheManager
         /// <returns></returns>
         public bool Add(string key, object value, TimeSpan expiresIn, bool isSliding = false)
         {
+            key = $"{_prefixKey}_{key}";
             if (isSliding)
                 _cache.Set(key, value,
                     new MemoryCacheEntryOptions()
@@ -137,6 +146,7 @@ namespace JIYUWU.Core.CacheManager
             {
                 throw new ArgumentNullException(nameof(key));
             }
+            key = $"{_prefixKey}_{key}";
             _cache.Remove(key);
 
             return !Exists(key);
@@ -152,11 +162,11 @@ namespace JIYUWU.Core.CacheManager
             {
                 throw new ArgumentNullException(nameof(keys));
             }
-
-            keys.ToList().ForEach(item => _cache.Remove(item));
+            keys.ToList().ForEach(item => _cache.Remove($"{_prefixKey}_{item}"));
         }
         public string Get(string key)
         {
+            key = $"{_prefixKey}_{key}";
             return _cache.Get(key)?.ToString();
         }
         /// <summary>
@@ -170,6 +180,7 @@ namespace JIYUWU.Core.CacheManager
             {
                 throw new ArgumentNullException(nameof(key));
             }
+            key = $"{_prefixKey}_{key}";
             return _cache.Get(key) as T;
         }
 

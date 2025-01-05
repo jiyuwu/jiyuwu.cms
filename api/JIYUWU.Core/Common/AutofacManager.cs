@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using JIYUWU.Core.CacheManager;
 using JIYUWU.Core.Common;
 using JIYUWU.Core.DbSqlSugar;
 using JIYUWU.Core.UserManager;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using System.Reflection;
 using System.Runtime.Loader;
+using JIYUWU.Core.Filter;
 
 namespace JIYUWU.Core.Extension
 {
@@ -75,17 +77,22 @@ namespace JIYUWU.Core.Extension
 
 
 
-            ////启用缓存
-            //if (AppSetting.UseRedis)
-            //{
-            //    builder.RegisterType<RedisCacheService>().As<ICacheService>().SingleInstance();
-            //}
-            //else
-            //{
-            //    builder.RegisterType<MemoryCacheService>().As<ICacheService>().SingleInstance();
-            //}
+            //启用缓存
+            if (AppSetting.UseRedis)
+            {
+                builder.RegisterType<RedisCacheService>().As<ICacheService>().SingleInstance();
+            }
+            else
+            {
+                builder.RegisterType<MemoryCacheService>().As<ICacheService>().SingleInstance();
+            }
 
-            //DbCache.Init();
+            DbCache.Init();
+            // 注册 TokenService
+            builder.RegisterType<TokenService>().AsSelf().InstancePerLifetimeScope();
+
+            // 注册 TokenMiddleware，确保 Autofac 能注入 TokenService
+            builder.RegisterType<TokenMiddleware>().AsSelf().InstancePerLifetimeScope();
             return services;
         }
 

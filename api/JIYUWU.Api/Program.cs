@@ -4,6 +4,7 @@ using Autofac.Extensions.DependencyInjection;
 using JIYUWU.Core.Common;
 using JIYUWU.Core.DbSqlSugar;
 using JIYUWU.Core.Extension;
+using JIYUWU.Core.Filter;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -72,8 +73,11 @@ if (app.Environment.IsDevelopment())
 }
 // 添加跨域中间件
 app.UseCors(); // 确保跨域在路由中间件之前被调用
+
 app.UseHttpsRedirection();
 app.UseRouting();
+// 配置中间件
+app.UseMiddleware<TokenMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 

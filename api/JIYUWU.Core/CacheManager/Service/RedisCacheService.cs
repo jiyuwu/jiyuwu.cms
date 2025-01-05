@@ -6,6 +6,7 @@ namespace JIYUWU.Core.CacheManager
 {
     public class RedisCacheService : ICacheService
     {
+        private readonly string _prefixKey = AppSetting.GetSection("ConnectionStrs")["CacheTag"];
         public RedisCacheService()
         {
             var csredis = new CSRedisClient(AppSetting.RedisConnectionString);
@@ -23,21 +24,25 @@ namespace JIYUWU.Core.CacheManager
             {
                 throw new ArgumentNullException(nameof(key));
             }
+            key = $"{_prefixKey}_{key}";
             return RedisHelper.Exists(key);
         }
 
         public void LPush(string key, string val)
         {
+            key = $"{_prefixKey}_{key}";
             RedisHelper.LPush(key, val);
         }
 
         public void RPush(string key, string val)
         {
+            key = $"{_prefixKey}_{key}";
             RedisHelper.RPush(key, val);
         }
 
         public T ListDequeue<T>(string key) where T : class
         {
+            key = $"{_prefixKey}_{key}";
             string value = RedisHelper.RPop(key);
             if (string.IsNullOrEmpty(value))
                 return null;
@@ -45,6 +50,7 @@ namespace JIYUWU.Core.CacheManager
         }
         public object ListDequeue(string key)
         {
+            key = $"{_prefixKey}_{key}";
             string value = RedisHelper.RPop(key);
             if (string.IsNullOrEmpty(value))
                 return null;
@@ -59,14 +65,17 @@ namespace JIYUWU.Core.CacheManager
         /// <param name="keepIndex"></param>
         public void ListRemove(string key, int keepIndex)
         {
+            key = $"{_prefixKey}_{key}";
             RedisHelper.LTrim(key, keepIndex, -1);
         }
         public bool Add(string key, string value, int expireSeconds = -1, bool isSliding = false)
         {
+            key = $"{_prefixKey}_{key}";
             return RedisHelper.Set(key, value, expireSeconds);
         }
         public bool AddObject(string key, object value, int expireSeconds = -1, bool isSliding = false)
         {
+            key = $"{_prefixKey}_{key}";
             return RedisHelper.Set(key, value, expireSeconds);
         }
 
@@ -77,6 +86,7 @@ namespace JIYUWU.Core.CacheManager
         /// <returns></returns>
         public bool Remove(string key)
         {
+            key = $"{_prefixKey}_{key}";
             RedisHelper.Del(key);
             return true;
         }
@@ -87,7 +97,8 @@ namespace JIYUWU.Core.CacheManager
         /// <returns></returns>
         public void RemoveAll(IEnumerable<string> keys)
         {
-            RedisHelper.Del(keys.ToArray());
+            IEnumerable<string> keysStr = keys.Select(x => $"{_prefixKey}_{x}");
+            RedisHelper.Del(keysStr.ToArray());
         }
         /// <summary>
         /// 获取缓存
@@ -96,6 +107,7 @@ namespace JIYUWU.Core.CacheManager
         /// <returns></returns>
         public T Get<T>(string key) where T : class
         {
+            key = $"{_prefixKey}_{key}";
             return RedisHelper.Get<T>(key);
         }
         /// <summary>
@@ -105,6 +117,7 @@ namespace JIYUWU.Core.CacheManager
         /// <returns></returns>
         public string Get(string key)
         {
+            key = $"{_prefixKey}_{key}";
             return RedisHelper.Get(key);
         }
         public void Dispose()
