@@ -85,35 +85,6 @@ namespace JIYUWU.Api.Controllers.Base
             }
         },
         {
-            ""name"": ""form"",
-            ""meta"": {
-                ""title"": ""表单页""
-            },
-            ""children"": [
-                {
-                    ""name"": ""formBasic"",
-                    ""meta"": {
-                        ""title"": ""基础表单"",
-                        ""actions"": [
-                            ""*""
-                        ]
-                    }
-                },
-                {
-                    ""name"": ""formStep"",
-                    ""meta"": {
-                        ""title"": ""分步表单""
-                    }
-                },
-                {
-                    ""name"": ""formAdvanced"",
-                    ""meta"": {
-                        ""title"": ""高级表单""
-                    }
-                }
-            ]
-        },
-        {
             ""name"": ""list"",
             ""meta"": {
                 ""title"": ""列表页""
@@ -166,26 +137,6 @@ namespace JIYUWU.Api.Controllers.Base
             ]
         },
         {
-            ""name"": ""profile"",
-            ""meta"": {
-                ""title"": ""详情页""
-            },
-            ""children"": [
-                {
-                    ""name"": ""profileBasic"",
-                    ""meta"": {
-                        ""title"": ""基础详情页""
-                    }
-                },
-                {
-                    ""name"": ""profileAdvanced"",
-                    ""meta"": {
-                        ""title"": ""高级详情页""
-                    }
-                }
-            ]
-        },
-        {
             ""name"": ""result"",
             ""meta"": {
                 ""title"": ""结果页""
@@ -230,268 +181,25 @@ namespace JIYUWU.Api.Controllers.Base
                     }
                 }
             ]
+        },{
+        name: 'result',
+        meta: {
+            title: '结果页'
         },
-        {
-            ""name"": ""user"",
-            ""meta"": {
-                ""title"": ""个人页""
+        children: [
+            {
+                name: 'resultSuccess',
+                meta: {
+                    title: '成功页'
+                },
             },
-            ""children"": [
-                {
-                    ""name"": ""userCenter"",
-                    ""meta"": {
-                        ""title"": ""个人中心""
-                    }
+            {
+                name: 'resultFail',
+                meta: {
+                    title: '失败页'
                 },
-                {
-                    ""name"": ""userSetting"",
-                    ""meta"": {
-                        ""title"": ""个人设置""
-                    }
-                }
-            ]
-        },
-        {
-            ""name"": ""system"",
-            ""meta"": {
-                ""title"": ""系统管理""
             },
-            ""children"": [
-                {
-                    ""name"": ""systemUser"",
-                    ""meta"": {
-                        ""title"": ""成员与部门""
-                    }
-                },
-                {
-                    ""name"": ""systemRole"",
-                    ""meta"": {
-                        ""title"": ""角色管理""
-                    }
-                },
-                {
-                    ""name"": ""systemMenu"",
-                    ""meta"": {
-                        ""title"": ""菜单管理""
-                    }
-                },
-                {
-                    ""name"": ""systemNewMenu"",
-                    ""meta"": {
-                        ""title"": ""新版菜单管理""
-                    }
-                },
-                {
-                    ""name"": ""systemDict"",
-                    ""meta"": {
-                        ""title"": ""字典管理""
-                    }
-                }
-            ]
-        },
-        {
-            ""name"": ""components"",
-            ""meta"": {
-                ""title"": ""组件""
-            },
-            ""children"": [
-                {
-                    ""name"": ""actionButton"",
-                    ""meta"": {
-                        ""title"": ""操作按钮""
-                    }
-                },
-                {
-                    ""name"": ""breadcrumb"",
-                    ""meta"": {
-                        ""title"": ""面包屑""
-                    }
-                },
-                {
-                    ""name"": ""button"",
-                    ""meta"": {
-                        ""title"": ""按钮""
-                    }
-                },
-                {
-                    ""name"": ""cascader"",
-                    ""meta"": {
-                        ""title"": ""级联选择""
-                    }
-                },
-                {
-                    ""name"": ""chart"",
-                    ""meta"": {
-                        ""title"": ""图表""
-                    }
-                },
-                {
-                    ""name"": ""cropper"",
-                    ""meta"": {
-                        ""title"": ""裁剪""
-                    }
-                },
-                {
-                    ""name"": ""editor"",
-                    ""meta"": {
-                        ""title"": ""编辑器""
-                    }
-                },
-                {
-                    ""name"": ""ellipsis"",
-                    ""meta"": {
-                        ""title"": ""文本省略""
-                    }
-                },
-                {
-                    ""name"": ""filters"",
-                    ""meta"": {
-                        ""title"": ""筛选""
-                    }
-                },
-                {
-                    ""name"": ""formTable"",
-                    ""meta"": {
-                        ""title"": ""表单表格""
-                    }
-                },
-                {
-                    ""name"": ""grid"",
-                    ""meta"": {
-                        ""title"": ""网格""
-                    }
-                },
-                {
-                    ""name"": ""infiniteScroll"",
-                    ""meta"": {
-                        ""title"": ""无限滚动""
-                    }
-                },
-                {
-                    ""name"": ""loading"",
-                    ""meta"": {
-                        ""title"": ""加载""
-                    }
-                },
-                {
-                    ""name"": ""modal"",
-                    ""meta"": {
-                        ""title"": ""弹窗""
-                    }
-                },
-                {
-                    ""name"": ""preview"",
-                    ""meta"": {
-                        ""title"": ""预览""
-                    }
-                },
-                {
-                    ""name"": ""qrcode"",
-                    ""meta"": {
-                        ""title"": ""二维码""
-                    }
-                },
-                {
-                    ""name"": ""resizeBox"",
-                    ""meta"": {
-                        ""title"": ""伸缩框""
-                    }
-                },
-                {
-                    ""name"": ""scrollbar"",
-                    ""meta"": {
-                        ""title"": ""滚动条""
-                    }
-                },
-                {
-                    ""name"": ""search"",
-                    ""meta"": {
-                        ""title"": ""搜索""
-                    }
-                },
-                {
-                    ""name"": ""sendCode"",
-                    ""meta"": {
-                        ""title"": ""发送验证码""
-                    }
-                },
-                {
-                    ""name"": ""tableColumnSetting"",
-                    ""meta"": {
-                        ""title"": ""表格列设置""
-                    }
-                },
-                {
-                    ""name"": ""tag"",
-                    ""meta"": {
-                        ""title"": ""标签""
-                    }
-                },
-                {
-                    ""name"": ""tagSelect"",
-                    ""meta"": {
-                        ""title"": ""标签选择""
-                    }
-                },
-                {
-                    ""name"": ""toolbar"",
-                    ""meta"": {
-                        ""title"": ""工具条""
-                    }
-                },
-                {
-                    ""name"": ""transfer"",
-                    ""meta"": {
-                        ""title"": ""穿梭框""
-                    }
-                },
-                {
-                    ""name"": ""tree"",
-                    ""meta"": {
-                        ""title"": ""树形控件""
-                    }
-                },
-                {
-                    ""name"": ""upload"",
-                    ""meta"": {
-                        ""title"": ""上传""
-                    }
-                }
-            ]
-        },
-        {
-            ""name"": ""link"",
-            ""meta"": {
-                ""title"": ""外部链接""
-            },
-            ""children"": [
-                {
-                    ""name"": ""github"",
-                    ""meta"": {
-                        ""title"": ""Github""
-                    }
-                }
-            ]
-        },
-        {
-            ""name"": ""iframePage"",
-            ""meta"": {
-                ""title"": ""Iframe""
-            },
-            ""children"": [
-                {
-                    ""name"": ""iframeVue"",
-                    ""meta"": {
-                        ""title"": ""Vue""
-                    }
-                },
-                {
-                    ""name"": ""iframeAntd"",
-                    ""meta"": {
-                        ""title"": ""Ant Design Vue""
-                    }
-                }
-            ]
+            ],
         },
         {
             ""name"": ""other"",
