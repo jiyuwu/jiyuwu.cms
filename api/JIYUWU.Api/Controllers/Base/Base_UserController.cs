@@ -87,7 +87,7 @@ namespace JIYUWU.Api.Controllers.Base
         {
             ""name"": ""list"",
             ""meta"": {
-                ""title"": ""列表页""
+                ""title"": ""message.hello""
             },
             ""children"": [
                 {
@@ -111,7 +111,7 @@ namespace JIYUWU.Api.Controllers.Base
                         {
                             ""name"": ""listSearchApplications"",
                             ""meta"": {
-                                ""title"": ""搜索列表（应用）""
+                                ""title"": ""message.hello""
                             }
                         }
                     ]
