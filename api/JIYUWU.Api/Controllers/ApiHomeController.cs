@@ -8,7 +8,7 @@ namespace JIYUWU.Api.Controllers
     {
 
         [HttpPost,HttpGet, Route("TestApi")]
-        public IActionResult TestApi(Demo_Log demo)
+        public IActionResult TestApi1(Demo_Log demo)
         {
             return Json(demo);
         }
