@@ -32,6 +32,7 @@ namespace JIYUWU.Base.Service
         {
             get { return AutofacContainerModule.GetService<IBase_UserService>(); }
         }
+        #region 用户信息缓存
         public bool SetUserInfo(Base_User user, string token)
         {
             if (user == null)
@@ -48,5 +49,12 @@ namespace JIYUWU.Base.Service
             var user = _cacheService.Get<Base_User>(key);
             return user;
         }
+        public bool RemoveUserInfo(string token)
+        {
+            string key = $"{_cacheUserKey}_{token}";
+            bool result = _cacheService.Remove(key);
+            return result;
+        }
+        #endregion
     }
 }

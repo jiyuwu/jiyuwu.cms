@@ -404,9 +404,17 @@ namespace JIYUWU.Core.Common
             }
 
             PropertyInfo keyPro = type.GetKeyProperty();
+            //if(saveDataModel.MainData.GetValue(keyPro.Name) == null)
+            //{
+
+            //}
             if (keyPro.PropertyType == typeof(Guid))
             {
                 saveDataModel.MainData.Add(keyPro.Name, Guid.NewGuid());
+            }
+            else if(keyPro.PropertyType == typeof(string))
+            {
+                saveDataModel.MainData.Add(keyPro.Name, Guid.NewGuid().ToString());
             }
             else if (keyPro.PropertyType == typeof(long) && AppSetting.UseSnow)
             {
