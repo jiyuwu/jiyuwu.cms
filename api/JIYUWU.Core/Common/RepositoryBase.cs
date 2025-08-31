@@ -2,7 +2,7 @@
 using JIYUWU.Core.Extension;
 using JIYUWU.Entity;
 using JIYUWU.Entity.Base;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+using NPOI.SS.Formula.Functions;
 using SqlSugar;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;

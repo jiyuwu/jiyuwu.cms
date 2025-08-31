@@ -1,3 +1,3 @@
 C:
-cd leidian\LDPlayer4
+cd leidian\LDPlayer9
 adb connect 127.0.0.1:5555
